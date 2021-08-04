@@ -129,17 +129,12 @@ def data_to_puz(puzzle):
 
 
 def main():
-    if len(sys.argv) != 3:
-        if getattr(sys, 'frozen', False):
-            self_name = sys.executable
-        elif __file__:
-            self_name = __file__
+    if len(sys.argv) == 3:
+        url, output_fn = sys.argv[1:3]
+    else:
+        url = input("Enter the NY Times crossword URL: ")
+        output_fn = input("Enter the output filename: ")
 
-        print("Usage:")
-        print(f"{self_name} <crossword url> <.puz file>")
-        return
-
-    url, output_fn = sys.argv[1:3]
     # url = "https://www.nytimes.com/crosswords/game/daily/2021/06/03"
     # output_fn = "test.puz"
 
