@@ -29,3 +29,8 @@
 
 # Any downloaded .puz files
 *.puz
+
+# Build artifacts
+dist/*
+build/*
+*.spec
