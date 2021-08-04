@@ -11,7 +11,9 @@ Loading https://www.nytimes.com/crosswords/game/daily/1994/02/14...
 Created example.puz
 ```
 
-Alternativly, you can pass in the URL and filename from the command line.
+Note: Running this script requires you're logged into nytimes.com in your browser.
+
+Alternatively, you can pass in the URL and filename from the command line.
 
 To run the Python script directly, clone this repo, then setup the venv to download packages:
 ```
