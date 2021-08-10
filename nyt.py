@@ -129,99 +129,22 @@ def data_to_puz(puzzle):
 
 
 def main():
-    # if len(sys.argv) == 3:
-    #     url, output_fn = sys.argv[1:3]
-    # else:
-    #     url = input("Enter the NY Times crossword URL: ")
-    #     output_fn = input("Enter the output filename: ")
+    if len(sys.argv) == 3:
+        url, output_fn = sys.argv[1:3]
+    else:
+        url = input("Enter the NY Times crossword URL: ")
+        output_fn = input("Enter the output filename: ")
 
     # url = "https://www.nytimes.com/crosswords/game/daily/2021/06/03"
     # output_fn = "test.puz"
 
     # Get the puzzle from NYT, the first time this is called
     # the cookie will be archived
-    # puzzle = get_puzzle(url)
-
-    puzzle = {
-        "dimensions": {
-            "rowCount": 0,
-            "columnCount": 0,
-        },
-        "cells": [],
-        "clues": [
-        ],
-        "meta": {
-            "constructors": [],
-        },
-    }
-    foo = """
-.	.	.	x	x	x	x	a	x	x	x	.	.	.	x	x	x
-n	y	t	i	m	e	s	c	r	o	s	s	w	o	r	d	s
-x	x	x	x	x	x	x	r	.	.	x	x	e	x	x	x	.
-x	x	x	x	x	x	x	o	.	x	x	x	b	x	x	x	.
-x	x	.	.	.	.	x	s	.	x	x	x	p	x	x	x	.
-x	x	.	x	x	x	x	s	x	x	x	x	a	x	x	x	x
-x	x	.	x	x	x	x	l	x	x	x	x	g	x	.	x	x
-x	x	x	x	x	x	x	i	x	x	x	x	e	x	.	x	x
-.	c	o	n	v	e	r	t	.	x	x	.	.	.	.	x	x
-.	x	x	x	x	x	x	e	.	x	x	x	x	x	x	x	x
-.	x	x	x	x	x	x	.	.	x	x	x	x	x	x	x	x
-x	x	x	.	.	.	x	x	x	x	x	x	x	x	.	.	.
-    """
-    output_fn = "boom.puz"
-    foo = [x.strip().split("\t") for x in foo.split("\n") if len(x.strip())]
-    for y in range(len(foo)):
-        for x in range(len(foo[0])):
-            if foo[y][x] != ".":
-                if x < len(foo[0]) - 1:
-                    if x == 0:
-                        if foo[y][x + 1] != ".":
-                            z = ""
-                            xx, yy = x, y
-                            while xx < len(foo[0]) and yy < len(foo) and foo[yy][xx] != ".":
-                                z += foo[yy][xx]
-                                xx += 1
-                            puzzle['clues'].append({"text": z})
-                    else:
-                        if foo[y][x-1] == "." and foo[y][x+1] != ".":
-                            z = ""
-                            xx, yy = x, y
-                            while xx < len(foo[0]) and yy < len(foo) and foo[yy][xx] != ".":
-                                z += foo[yy][xx]
-                                xx += 1
-                            puzzle['clues'].append({"text": z})
-                if y < len(foo) - 1:
-                    if y == 0:
-                        if foo[y + 1][x] != ".":
-                            z = ""
-                            xx, yy = x, y
-                            while xx < len(foo[0]) and yy < len(foo) and foo[yy][xx] != ".":
-                                z += foo[yy][xx]
-                                yy += 1
-                            puzzle['clues'].append({"text": z})
-                    else:
-                        if foo[y-1][x] == "." and foo[y+1][x] != ".":
-                            z = ""
-                            xx, yy = x, y
-                            while xx < len(foo[0]) and yy < len(foo) and foo[yy][xx] != ".":
-                                z += foo[yy][xx]
-                                yy += 1
-                            puzzle['clues'].append({"text": z})
-
-    puzzle['dimensions']['columnCount'] = len(foo[0])
-    puzzle['dimensions']['rowCount'] = len(foo)
-    for row in foo:
-        for cell in row:
-            if cell == ".":
-                puzzle['cells'].append({})
-            else:
-                puzzle['cells'].append({'answer': cell.upper()})
-    puzzle['gamePageData'] = puzzle
-
+    puzzle = get_puzzle(url)
 
     # Useful for debugging, hidden by default since 
     # showing the solution kinda defaults the point
-    print_puzzle(puzzle)
+    # print_puzzle(puzzle)
 
     # And turn the puzzle data from NYT into a puz data structure
     output = data_to_puz(puzzle)
