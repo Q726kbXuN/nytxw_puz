@@ -109,8 +109,16 @@ def data_to_puz(puzzle):
     p.solution = "".join([x['answer'][0] if 'answer' in x else '.' for x in data['cells']])
     p.fill = "".join(['-' if 'answer' in x else '.' for x in data['cells']])
 
-    # And the clues, they're HTML text here, so decode them
-    p.clues = [html.unescape(x['text']) for x in data['clues']]
+    # And the clues, they're HTML text here, so decode them, Across lite expects them in 
+    # crossword order, not the NYT clue order, order them correctly
+    seen = set()
+    clues = []
+    for cell in data['cells']:
+        for clue in cell['clues']:
+            if clue not in seen:
+                seen.add(clue)
+                clues.append(html.unescape(data['clues'][clue]['text']))
+    p.clues = clues
 
     # See if any of the answers is multi-character (rebus)
     if max([len(x['answer']) for x in data['cells'] if 'answer' in x]) > 1:
