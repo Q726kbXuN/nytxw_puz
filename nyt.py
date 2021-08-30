@@ -18,7 +18,59 @@ BLOCK_RIGHT = "\u258c"
 TITLE_LINE = "\u2501"
 
 
-def get_puzzle(url):
+def get_browsers():
+    return {
+        "Chrome": browser_cookie3.chrome,
+        "Chromium": browser_cookie3.chromium,
+        "Opera": browser_cookie3.opera,
+        "Microsoft Egde": browser_cookie3.edge,
+        "Firefox": browser_cookie3.firefox,
+    }
+
+
+def pick_browser():
+    # Ask the user for which browser they want to use
+    if os.name == "nt":
+        homedir = os.environ.get("APPDATA", os.path.expanduser("~"))
+    else:
+        homedir = format(os.path.expanduser("~"))
+
+    options = get_browsers()
+    settings_file = os.path.join(homedir, 'nytxw_puz.json')
+    settings = {}
+    if os.path.isfile(settings_file):
+        with open(settings_file) as f:
+            settings = json.load(f)
+
+    default = settings.get('default')
+    while True:
+        default_number = None
+        keys = list(sorted(options))
+        for i, desc in enumerate(keys):
+            print(f" {i+1}) {desc}")
+            if default is not None and desc == default:
+                default_number = str(i + 1)
+        
+        selection = input(f"Please select a browser that's logged into NYTimes.com{' [' + default_number + ']' if default_number else ''}: ")
+        try:
+            if len(selection) == 0 and default_number:
+                selection = default_number
+            selection = int(selection)
+            if selection >= 1 and selection <= len(options):
+                selection = keys[selection - 1]
+                break
+        except:
+            pass
+    
+    settings['default'] = selection
+    if default != selection:
+        with open(settings_file, 'wt') as f:
+            json.dump(settings, f)
+
+    return selection
+
+
+def get_puzzle(url, browser):
     cache = {}
     if CACHE_DATA:
         # Simple cache, useful for debugging, grows to stupid
@@ -30,7 +82,7 @@ def get_puzzle(url):
     if url not in cache:
         print(f"Loading {url}...")
         # Pull out the nytimes cookies from the user's browser
-        cookies = browser_cookie3.chrome(domain_name='nytimes.com')
+        cookies = get_browsers()[browser](domain_name='nytimes.com')
         # Load the webpage, its inline javascript includes the puzzle data
         resp = requests.get(url, cookies=cookies).content
         resp = resp.decode("utf-8")
@@ -137,9 +189,15 @@ def data_to_puz(puzzle):
 
 
 def main():
-    if len(sys.argv) == 3:
-        url, output_fn = sys.argv[1:3]
+    if len(sys.argv) == 4:
+        browser, url, output_fn = sys.argv[1:4]
+        if browser not in get_browsers():
+            print(f"ERROR: Unknown browser '{browser}', please select one of:")
+            for key in get_browsers():
+                print(f"  {key}")
+        exit(1)
     else:
+        browser = pick_browser()
         url = input("Enter the NY Times crossword URL: ")
         output_fn = input("Enter the output filename: ")
 
@@ -148,7 +206,7 @@ def main():
 
     # Get the puzzle from NYT, the first time this is called
     # the cookie will be archived
-    puzzle = get_puzzle(url)
+    puzzle = get_puzzle(url, browser)
 
     # Useful for debugging, hidden by default since 
     # showing the solution kinda defaults the point
