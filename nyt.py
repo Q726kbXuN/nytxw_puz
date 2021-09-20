@@ -151,6 +151,8 @@ def data_to_puz(puzzle):
     data = puzzle['gamePageData']
     # Basic header
     p.title = 'New York Times Crossword'
+    if "title" in data["meta"]:
+        p.title = data["meta"]["title"]
     p.author = ", ".join(data["meta"]["constructors"])
 
     # Pull out the size of the puzzle
