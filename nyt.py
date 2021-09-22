@@ -9,6 +9,7 @@ import json
 import puz
 import sys
 import html
+import datetime
 
 CACHE_DATA = False
 
@@ -23,7 +24,7 @@ def get_browsers():
         "Chrome": browser_cookie3.chrome,
         "Chromium": browser_cookie3.chromium,
         "Opera": browser_cookie3.opera,
-        "Microsoft Egde": browser_cookie3.edge,
+        "Microsoft Edge": browser_cookie3.edge,
         "Firefox": browser_cookie3.firefox,
     }
 
@@ -149,11 +150,25 @@ def print_puzzle(p):
 def data_to_puz(puzzle):
     p = puz.Puzzle()
     data = puzzle['gamePageData']
+
     # Basic header
     p.title = 'New York Times Crossword'
+    if "publicationDate" in data["meta"]:
+        year, month, day = data["meta"]["publicationDate"].split('-')
+        d = datetime.date(int(year), int(month), int(day))
+        months = ['', 'January', 'February', 'March', 'April', 'May', 'June',
+                  'July', 'August', 'September', 'October', 'November', 'December']
+        dow = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday',
+               'Saturday', 'Sunday']
+        p.title = ('NY Times, ' + dow[d.weekday()] + ', ' + months[d.month] +
+                   ' ' + str(d.day) + ', ' + str(d.year))
     if "title" in data["meta"]:
         p.title = data["meta"]["title"]
     p.author = ", ".join(data["meta"]["constructors"])
+    if "editor" in data["meta"]:
+        p.author += ' / ' + data["meta"]["editor"]
+    if "copyright" in data["meta"]:
+        p.copyright = '© ' + data["meta"]["copyright"] + ', The New York Times'
 
     # Pull out the size of the puzzle
     p.height = data["dimensions"]["rowCount"]
@@ -163,7 +178,7 @@ def data_to_puz(puzzle):
     p.solution = "".join([x['answer'][0] if 'answer' in x else '.' for x in data['cells']])
     p.fill = "".join(['-' if 'answer' in x else '.' for x in data['cells']])
 
-    # And the clues, they're HTML text here, so decode them, Across lite expects them in 
+    # And the clues, they're HTML text here, so decode them, Across Lite expects them in
     # crossword order, not the NYT clue order, order them correctly
     seen = set()
     clues = []
@@ -211,7 +226,7 @@ def main():
     puzzle = get_puzzle(url, browser)
 
     # Useful for debugging, hidden by default since 
-    # showing the solution kinda defaults the point
+    # showing the solution kinda defeats the point
     # print_puzzle(puzzle)
 
     # And turn the puzzle data from NYT into a puz data structure
