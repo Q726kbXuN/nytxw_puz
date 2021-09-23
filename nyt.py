@@ -18,6 +18,27 @@ BLOCK_MID = "\u2588"
 BLOCK_RIGHT = "\u258c"
 TITLE_LINE = "\u2501"
 
+LATIN1_SUBS = {
+    # For converting clues etc. into Latin-1 (ISO-8859-1) format;
+    # adapted from https://github.com/kberg/kpuz
+    u"“": u'"',
+    u"”": u'"',
+    u"‘": u"'",
+    u"’": u"'",
+    u"–": u"--",
+    u"—": u"---",
+    u"…": u"...",
+    u"№": u"No.",
+    u"π": u"pi",
+    u"🔥": u"[emoji: fire]",
+    u"🙈": u"[emoji: monkey with hands over eyes]",
+    u"👉🏾": u"[emoji: hand pointing right]",
+    u"👆🏻": u"[emoji: hand pointing up]",
+    u"🤘🏽": u"[emoji: hand with raised index and pinky finger]",
+    u"✊🏿": u"[emoji: fist]",
+    u"ǐ": "i",
+}
+
 
 def get_browsers():
     return {
@@ -147,14 +168,22 @@ def print_puzzle(p):
         print(" " + row + extra)
 
 
+def latin1ify(s):
+    # Make a Unicode string compliant with the Latin-1 (ISO-8859-1) character
+    # set; the Across Lite format only supports Latin-1 encoding
+    for search, replace in LATIN1_SUBS.items():
+        s = s.replace(search, replace)
+    return s
+
+
 def data_to_puz(puzzle):
     p = puz.Puzzle()
     data = puzzle['gamePageData']
 
     # Basic header
     p.title = 'New York Times Crossword'
-    if "publicationDate" in data["meta"]:
-        year, month, day = data["meta"]["publicationDate"].split('-')
+    if 'publicationDate' in data['meta']:
+        year, month, day = data['meta']['publicationDate'].split('-')
         d = datetime.date(int(year), int(month), int(day))
         months = ['', 'January', 'February', 'March', 'April', 'May', 'June',
                   'July', 'August', 'September', 'October', 'November', 'December']
@@ -162,21 +191,24 @@ def data_to_puz(puzzle):
                'Saturday', 'Sunday']
         p.title = ('NY Times, ' + dow[d.weekday()] + ', ' + months[d.month] +
                    ' ' + str(d.day) + ', ' + str(d.year))
-    if "title" in data["meta"]:
-        p.title = data["meta"]["title"]
-    p.author = ", ".join(data["meta"]["constructors"])
-    if "editor" in data["meta"]:
-        p.author += ' / ' + data["meta"]["editor"]
-    if "copyright" in data["meta"]:
-        p.copyright = '© ' + data["meta"]["copyright"] + ', The New York Times'
+        if 'title' in data['meta']:
+            p.title += ' ' + latin1ify(data['meta']['title'].upper())
+    elif 'title' in data['meta']:
+        p.title = latin1ify(data['meta']['title'].upper())
+    p.author = ', '.join(latin1ify(c) for c in data['meta']['constructors'])
+    if 'editor' in data['meta']:
+        p.author += ' / ' + latin1ify(data['meta']['editor'])
+    if 'copyright' in data['meta']:
+        p.copyright = '© ' + data['meta']['copyright'] + ', The New York Times'
 
     # Pull out the size of the puzzle
     p.height = data["dimensions"]["rowCount"]
     p.width = data["dimensions"]["columnCount"]
 
     # Fill out the main grid
-    p.solution = "".join([x['answer'][0] if 'answer' in x else '.' for x in data['cells']])
-    p.fill = "".join(['-' if 'answer' in x else '.' for x in data['cells']])
+    p.solution = ''.join(latin1ify(x['answer'][0]) if 'answer' in x
+                         else '.' for x in data['cells'])
+    p.fill = ''.join('-' if 'answer' in x else '.' for x in data['cells'])
 
     # And the clues, they're HTML text here, so decode them, Across Lite expects them in
     # crossword order, not the NYT clue order, order them correctly
@@ -186,7 +218,7 @@ def data_to_puz(puzzle):
         for clue in cell['clues']:
             if clue not in seen:
                 seen.add(clue)
-                clues.append(html.unescape(data['clues'][clue]['text']))
+                clues.append(latin1ify(html.unescape(data['clues'][clue]['text'])))
     p.clues = clues
 
     # See if any of the answers is multi-character (rebus)
@@ -197,7 +229,7 @@ def data_to_puz(puzzle):
         # And find all the rebus answers and add them to the data
         for cell in data['cells']:
             if 'answer' in cell and len(cell['answer']) > 1:
-                rebus.add_rebus(cell['answer'])
+                rebus.add_rebus(latin1ify(cell['answer']))
             else:
                 rebus.add_rebus(None)
 
