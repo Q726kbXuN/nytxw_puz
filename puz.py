@@ -35,7 +35,7 @@ MASKSTRING = 'ICHEATED'
 
 ENCODING = 'ISO-8859-1'
 ENCODING_UTF8 = 'UTF-8'
-ENCODING_ERRORS = 'strict'  # raises an exception for bad chars; change to 'replace' for laxer handling
+ENCODING_ERRORS = 'namereplace'  # e.g. '\N{EM DASH}'. Least-worst option.
 
 ACROSSDOWN = b'ACROSS&DOWN'
 
