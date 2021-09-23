@@ -25,8 +25,8 @@ LATIN1_SUBS = {
     u"”": u'"',
     u"‘": u"'",
     u"’": u"'",
-    u"–": u"--",
-    u"—": u"---",
+    u"–": u"-",
+    u"—": u"--",
     u"…": u"...",
     u"№": u"No.",
     u"π": u"pi",
@@ -36,7 +36,13 @@ LATIN1_SUBS = {
     u"👆🏻": u"[emoji: hand pointing up]",
     u"🤘🏽": u"[emoji: hand with raised index and pinky finger]",
     u"✊🏿": u"[emoji: fist]",
-    u"ǐ": "i",
+    u"€": u"EUR",
+    u"•": u"*",
+    u"†": u"[dagger]",
+    u"‡": u"[dagger]",
+    u"™": u"[TM]",
+    u"‹": u"<",
+    u"›": u">",
 }
 
 
@@ -170,9 +176,14 @@ def print_puzzle(p):
 
 def latin1ify(s):
     # Make a Unicode string compliant with the Latin-1 (ISO-8859-1) character
-    # set; the Across Lite format only supports Latin-1 encoding
+    # set; the Across Lite v1.3 format only supports Latin-1 encoding
+
+    # Use our table to convert the most common Unicode glyphs
     for search, replace in LATIN1_SUBS.items():
         s = s.replace(search, replace)
+
+    # Convert anything remaining using replacements like '\N{EM DASH}'
+    s = s.encode('ISO-8859-1', 'namereplace').decode('ISO-8859-1')
     return s
 
 
