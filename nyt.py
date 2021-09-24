@@ -20,29 +20,56 @@ TITLE_LINE = "\u2501"
 
 LATIN1_SUBS = {
     # For converting clues etc. into Latin-1 (ISO-8859-1) format;
-    # adapted from https://github.com/kberg/kpuz
-    u"“": u'"',
-    u"”": u'"',
-    u"‘": u"'",
-    u"’": u"'",
-    u"–": u"-",
-    u"—": u"--",
-    u"…": u"...",
-    u"№": u"No.",
-    u"π": u"pi",
-    u"🔥": u"[emoji: fire]",
-    u"🙈": u"[emoji: monkey with hands over eyes]",
-    u"👉🏾": u"[emoji: hand pointing right]",
-    u"👆🏻": u"[emoji: hand pointing up]",
-    u"🤘🏽": u"[emoji: hand with raised index and pinky finger]",
-    u"✊🏿": u"[emoji: fist]",
-    u"€": u"EUR",
-    u"•": u"*",
-    u"†": u"[dagger]",
-    u"‡": u"[dagger]",
-    u"™": u"[TM]",
-    u"‹": u"<",
-    u"›": u">",
+    # value None means let the encoder insert a Latin-1 equivalent
+    u'“': u'"',
+    u'”': u'"',
+    u'‘': u"'",
+    u'’': u"'",
+    u'–': u'-',
+    u'—': u'--',
+    u'…': u'...',
+    u'№': u'No.',
+    u'π': u'pi',
+    u'€': u'EUR',
+    u'•': u'*',
+    u'†': u'[dagger]',
+    u'‡': u'[double dagger]',
+    u'™': u'[TM]',
+    u'‹': u'<',
+    u'›': u'>',
+    u'←': u'<--',
+    u'■': None,
+    u'☐': None,
+    u'→': u'-->',
+    u'♣': None,
+    u'√': None,
+    u'♠': None,
+    u'✓': None,
+    u'♭': None,
+    u'♂': None,
+    u'★': u'*',
+    u'θ': u'theta',
+    u'β': u'beta',
+    u'Č': None,
+    u'𝚫': u'Delta',
+    u'❤︎': None,
+    u'✔': None,
+    u'⚓': None,
+    u'♦': None,
+    u'♥': None,
+    u'☹': None,
+    u'☮': None,
+    u'☘': None,
+    u'◯': None,
+    u'▢': None,
+    u'∑': None,
+    u'∃': None,
+    u'↓': None,
+    u'⁎': u'*',
+    u'η': u'eta',
+    u'α': u'alpha',
+    u'Ω': u'Omega',
+    u'ō': None,
 }
 
 
@@ -178,11 +205,12 @@ def latin1ify(s):
     # Make a Unicode string compliant with the Latin-1 (ISO-8859-1) character
     # set; the Across Lite v1.3 format only supports Latin-1 encoding
 
-    # Use our table to convert the most common Unicode glyphs
+    # Use table to convert the most common Unicode glyphs
     for search, replace in LATIN1_SUBS.items():
-        s = s.replace(search, replace)
+        if replace is not None:
+            s = s.replace(search, replace)
 
-    # Convert anything remaining using replacements like '\N{EM DASH}'
+    # Convert anything remaining using replacements like '\N{WINKING FACE}'
     s = s.encode('ISO-8859-1', 'namereplace').decode('ISO-8859-1')
     return s
 
