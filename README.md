@@ -6,8 +6,6 @@ A windows program to convert NY Times crosswords from the web to Across Lite com
 
 To run this, first download and decompress the [release](https://github.com/Q726kbXuN/nytxw_puz/releases/latest/download/nytxw_puz.zip).  Then, run the executable, and answer the three questions:
 
-**Malware Warnings**: There are some known issues with malware warnings on this version.  These are being investigated, but know that the executable is safe, you can find [more details on this bug](https://github.com/Q726kbXuN/nytxw_puz/issues/8).
-
 
 ```
  1) Chrome
