@@ -272,6 +272,15 @@ def data_to_puz(puzzle):
             else:
                 rebus.add_rebus(None)
 
+    # See if any grid squares are marked up with circles
+    if any(x['type'] == 2 for x in data['cells'] if 'type' in x):
+        markup = p.markup()
+        markup.markup = [0] * (p.width * p.height)
+
+        for cell in data['cells']:
+            if 'type' in cell and cell['type'] == 2:
+                markup.markup[cell['index']] = puz.GridMarkup.Circled
+
     # All done
     return p
 
