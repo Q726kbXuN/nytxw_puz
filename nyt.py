@@ -289,6 +289,11 @@ def data_to_puz(puzzle):
             if 'type' in cell and cell['type'] == NYT_TYPE_CIRCLED:
                 markup.markup[cell['index']] = puz.GridMarkup.Circled
 
+    # Check for any notes in puzzle (e.g., Sep 11, 2008)
+    if 'notes' in data['meta']:
+        p.notes = '\n\n'.join(x['text'] for x in data['meta']['notes']
+                              if 'text' in x)
+
     # All done
     return p
 
