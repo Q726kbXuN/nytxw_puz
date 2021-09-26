@@ -13,10 +13,18 @@ import datetime
 
 CACHE_DATA = False
 
+# These unicode characters are just used to draw the crossword grid to stdout
 BLOCK_LEFT = "\u2590"
 BLOCK_MID = "\u2588"
 BLOCK_RIGHT = "\u258c"
 TITLE_LINE = "\u2501"
+
+# Different possibilities for each cell in the NYT's JSON data structure
+NYT_TYPE_BLOCK = 0     # Black cell, no clues or answer
+NYT_TYPE_NORMAL = 1    # Normal cell, could be a rebus
+NYT_TYPE_CIRCLED = 2   # Cell with a circle around it as for letters part of a theme
+NYT_TYPE_GRAY = 3      # A cell filled in as gray
+NYT_TYPE_INVISIBLE = 4 # An "invisible" cell, generally something outside the main grid
 
 LATIN1_SUBS = {
     # For converting clues etc. into Latin-1 (ISO-8859-1) format;
@@ -273,12 +281,12 @@ def data_to_puz(puzzle):
                 rebus.add_rebus(None)
 
     # See if any grid squares are marked up with circles
-    if any(x['type'] == 2 for x in data['cells'] if 'type' in x):
+    if any(x['type'] == NYT_TYPE_CIRCLED for x in data['cells'] if 'type' in x):
         markup = p.markup()
         markup.markup = [0] * (p.width * p.height)
 
         for cell in data['cells']:
-            if 'type' in cell and cell['type'] == 2:
+            if 'type' in cell and cell['type'] == NYT_TYPE_CIRCLED:
                 markup.markup[cell['index']] = puz.GridMarkup.Circled
 
     # All done
