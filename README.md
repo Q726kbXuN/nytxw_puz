@@ -50,6 +50,10 @@ The New York Times announced that on August 10th, 2021, [they will no longer pro
 
 For me personally, I want something that works completely offline, and doesn't require I stare at my phone even more.  I'm sure other people have other reasons, so I decided to put my little tool online for others to use.
 
+* Help?  How do I run this?
+
+Try following [these directions](howto.md).
+
 * Anything else?
 
 Feel free to contact me on [reddit](https://www.reddit.com/user/nobody514/).
