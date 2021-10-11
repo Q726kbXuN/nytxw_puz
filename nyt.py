@@ -79,6 +79,18 @@ LATIN1_SUBS = {
     u'Ω': u'Omega',
     u'ō': None,
 }
+# Some rules to remove HTML like things with text versions for the .puz files
+HTML_TO_TEXT_RULES = [
+    ("<i>(.*?)</i>", "_\\1_"),              # "<i>Italic</i>" -> "_Italic_"
+    ("<em>(.*?)</em>", "_\\1_"),            # "<em>Italic</em>" -> "_Italic_"
+    ("<sub>(.*?)</sub>", "\\1"),            # "KNO<sub>3</sub>" -> "KNO3"
+    ("<sup>([0-9 ]+)</sup>", "^\\1"),       # "E=MC<sup>2</sup>" -> "E=MC^2"
+    ("<sup>(.*?)</sup>", "\\1"),            # "103<sup>rd</sup>" -> "103rd" (Note, after the numeric 'sup')
+    ("<br( /|)>", " / "),                   # "A<br>B<br>C" -> "A / B / C"
+    ("<s>(.*?)</s>", "[*cross out* \\1]"),  # "<s>Crossed Out</s>" -> "[*cross out* Crossed out]"
+    ("<[^>]+>", ""),                        # Remove other things that look like HTML, but leave bare "<" alone.
+    ("&nbsp;", " "),                        # Replace HTML's non-breaking spaces into normal spaces
+]
 
 
 def get_browsers():
@@ -220,6 +232,11 @@ def latin1ify(s):
 
     # Convert anything remaining using replacements like '\N{WINKING FACE}'
     s = s.encode('ISO-8859-1', 'namereplace').decode('ISO-8859-1')
+
+    # Replace HTML like things into plain text
+    for pattern, repl in HTML_TO_TEXT_RULES:
+        s = re.sub(pattern, repl, s)
+
     return s
 
 
