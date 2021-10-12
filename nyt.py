@@ -307,7 +307,7 @@ def data_to_puz(puzzle):
                 markup.markup[cell['index']] = puz.GridMarkup.Circled
 
     # Check for any notes in puzzle (e.g., Sep 11, 2008)
-    if 'notes' in data['meta']:
+    if data['meta'].get('notes', None) is not None:
         p.notes = '\n\n'.join(x['text'] for x in data['meta']['notes']
                               if 'text' in x)
 
