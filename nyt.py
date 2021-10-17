@@ -308,7 +308,7 @@ def data_to_puz(puzzle):
 
     # Check for any notes in puzzle (e.g., Sep 11, 2008)
     if 'notes' in data['meta']:
-        p.notes = '\n\n'.join(x['text'] for x in data['meta']['notes']
+        p.notes = '\n\n'.join(latin1ify(x['text']) for x in data['meta']['notes']
                               if 'text' in x)
 
     # All done
