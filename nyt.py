@@ -298,17 +298,17 @@ def data_to_puz(puzzle):
                 rebus.add_rebus(None)
 
     # See if any grid squares are marked up with circles
-    if any(x['type'] == NYT_TYPE_CIRCLED for x in data['cells'] if 'type' in x):
+    if any(x['type'] in (NYT_TYPE_CIRCLED, NYT_TYPE_GRAY) for x in data['cells'] if 'type' in x):
         markup = p.markup()
         markup.markup = [0] * (p.width * p.height)
 
         for cell in data['cells']:
-            if 'type' in cell and cell['type'] == NYT_TYPE_CIRCLED:
+            if 'type' in cell and cell['type'] in (NYT_TYPE_CIRCLED, NYT_TYPE_GRAY):
                 markup.markup[cell['index']] = puz.GridMarkup.Circled
 
     # Check for any notes in puzzle (e.g., Sep 11, 2008)
     if data['meta'].get('notes', None) is not None:
-        p.notes = '\n\n'.join(x['text'] for x in data['meta']['notes']
+        p.notes = '\n\n'.join(latin1ify(x['text']) for x in data['meta']['notes']
                               if 'text' in x)
 
     # All done
