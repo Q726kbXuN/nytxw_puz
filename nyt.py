@@ -93,10 +93,75 @@ HTML_TO_TEXT_RULES = [
 ]
 
 
+# Work around https://github.com/borisbabic/browser_cookie3/issues/104
+def chrome_bugfix(**kargs):
+    args = {
+        'linux_cookies':[
+                '~/.config/google-chrome/Default/Cookies',
+                '~/.config/google-chrome-beta/Default/Cookies'
+            ],
+        'windows_cookies':[
+                {'env':'APPDATA', 'path':'..\\Local\\Google\\Chrome\\User Data\\Default\\Cookies'},
+                {'env':'APPDATA', 'path':'..\\Local\\Google\\Chrome\\User Data\\Default\\Network\\Cookies'},
+                {'env':'LOCALAPPDATA', 'path':'Google\\Chrome\\User Data\\Default\\Cookies'},
+                {'env':'LOCALAPPDATA', 'path':'Google\\Chrome\\User Data\\Default\\Network\\Cookies'},
+                {'env':'APPDATA', 'path':'Google\\Chrome\\User Data\\Default\\Cookies'},
+                {'env':'APPDATA', 'path':'Google\\Chrome\\User Data\\Default\\Network\\Cookies'}
+            ],
+        'osx_cookies': ['~/Library/Application Support/Google/Chrome/Default/Cookies'],
+        'windows_keys': [
+                {'env':'APPDATA', 'path':'..\\Local\\Google\\Chrome\\User Data\\Local State'},
+                {'env':'LOCALAPPDATA', 'path':'Google\\Chrome\\User Data\\Local State'},
+                {'env':'APPDATA', 'path':'Google\\Chrome\\User Data\\Local State'}
+            ],
+        'os_crypt_name':'chrome',
+        'osx_key_service' : 'Chrome Safe Storage',
+        'osx_key_user' : 'Chrome'
+    }
+    for key, value in kargs.items():
+        args[key] = value    
+
+    cookies = browser_cookie3.ChromiumBased(browser='Chrome', **args)
+    return cookies.load()
+
+
+# Work around https://github.com/borisbabic/browser_cookie3/issues/104
+def chromium_bugfix(**kargs):
+    args = {
+        'linux_cookies':['~/.config/chromium/Default/Cookies'],
+        'windows_cookies':[
+                {'env':'APPDATA', 'path':'..\\Local\\Chromium\\User Data\\Default\\Cookies'},
+                {'env':'APPDATA', 'path':'..\\Local\\Chromium\\User Data\\Default\\Network\\Cookies'},
+                {'env':'LOCALAPPDATA', 'path':'Chromium\\User Data\\Default\\Cookies'},
+                {'env':'LOCALAPPDATA', 'path':'Chromium\\User Data\\Default\\Network\\Cookies'},
+                {'env':'APPDATA', 'path':'Chromium\\User Data\\Default\\Cookies'},
+                {'env':'APPDATA', 'path':'Chromium\\User Data\\Default\\Network\\Cookies'}
+        ],
+        'osx_cookies': ['~/Library/Application Support/Chromium/Default/Cookies'],
+        'windows_keys': [
+                {'env':'APPDATA', 'path':'..\\Local\\Chromium\\User Data\\Local State'},
+                {'env':'LOCALAPPDATA', 'path':'Chromium\\User Data\\Local State'},
+                {'env':'APPDATA', 'path':'Chromium\\User Data\\Local State'}
+        ],
+        'os_crypt_name':'chromium',
+        'osx_key_service' : 'Chromium Safe Storage',
+        'osx_key_user' : 'Chromium'
+    }
+    for key, value in kargs.items():
+        args[key] = value    
+
+    cookies = browser_cookie3.ChromiumBased(browser='Chromium', **args)
+    return cookies.load()
+
+
 def get_browsers():
     return {
-        "Chrome": browser_cookie3.chrome,
-        "Chromium": browser_cookie3.chromium,
+        # Work around https://github.com/borisbabic/browser_cookie3/issues/104
+        # "Chrome": browser_cookie3.chrome,
+        # "Chromium": browser_cookie3.chromium,
+        "Chrome": chrome_bugfix,
+        "Chromium": chromium_bugfix,
+
         "Opera": browser_cookie3.opera,
         "Microsoft Edge": browser_cookie3.edge,
         "Firefox": browser_cookie3.firefox,
