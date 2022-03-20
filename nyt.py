@@ -10,6 +10,7 @@ import puz
 import sys
 import html
 import datetime
+import time
 
 CACHE_DATA = False
 
@@ -223,19 +224,26 @@ def get_puzzle(url, browser):
         print(f"Loading {url}...")
         # Pull out the nytimes cookies from the user's browser
         cookies = get_browsers()[browser](domain_name='nytimes.com')
-        # Load the webpage, its inline javascript includes the puzzle data
-        resp = requests.get(url, cookies=cookies).content
-        resp = resp.decode("utf-8")
-        # Look for the javascript, it's easist here to just use a regex
-        m = re.search("(pluribus|window.gameData) *= *['\"](?P<data>.*?)['\"]", resp)
-        # Pull out the data element
-        resp = m.group("data")
-        # Which is url-encoded
-        resp = decompress.decode(resp)
-        # And LZString compressed
-        resp = decompress.decompress(resp)
-        # And a JSON blob
-        resp = json.loads(resp)
+        for _ in range(4):
+            # Load the webpage, its inline javascript includes the puzzle data
+            resp = requests.get(url, cookies=cookies).content
+            resp = resp.decode("utf-8")
+            # Look for the javascript, it's easist here to just use a regex
+            m = re.search("(pluribus|window.gameData) *= *['\"](?P<data>.*?)['\"]", resp)
+            if m is not None:
+                # Pull out the data element
+                resp = m.group("data")
+                # Which is url-encoded
+                resp = decompress.decode(resp)
+                # And LZString compressed
+                resp = decompress.decompress(resp)
+                # And a JSON blob
+                resp = json.loads(resp)
+                # All done, we can stop retries
+                break
+            else:
+                # Try again
+                time.sleep(1)
         cache[url] = resp
         if CACHE_DATA:
             with open(".cached.json", "w", newline="", encoding="utf-8") as f:
@@ -393,21 +401,32 @@ def main():
         url = input("Enter the NY Times crossword URL: ")
         output_fn = input("Enter the output filename: ")
 
-    # url = "https://www.nytimes.com/crosswords/game/daily/2021/06/03"
-    # output_fn = "test.puz"
+    try:
+        # url = "https://www.nytimes.com/crosswords/game/daily/2021/06/03"
+        # output_fn = "test.puz"
 
-    # Get the puzzle from NYT, the first time this is called
-    # the cookie will be archived
-    puzzle = get_puzzle(url, browser)
+        # Get the puzzle from NYT, the first time this is called
+        # the cookie will be archived
+        puzzle = get_puzzle(url, browser)
 
-    # Useful for debugging, hidden by default since 
-    # showing the solution kinda defeats the point
-    # print_puzzle(puzzle)
+        # Useful for debugging, hidden by default since 
+        # showing the solution kinda defeats the point
+        # print_puzzle(puzzle)
 
-    # And turn the puzzle data from NYT into a puz data structure
-    output = data_to_puz(puzzle)
-    output.save(output_fn)
-    print(f"Created {output_fn}")
+        # And turn the puzzle data from NYT into a puz data structure
+        output = data_to_puz(puzzle)
+        output.save(output_fn)
+        print(f"Created {output_fn}")
+    except:
+        print("ERROR! " * 10)
+        import traceback
+        traceback.print_exc()
+        print("ERROR! " * 10)
+        print("Settings: ", [browser, url, output_fn])
+        print("")
+        print("Please report issues to https://www.reddit.com/user/nobody514/")
+        print("")
+        input("Press enter to continue...")
 
 
 if __name__ == "__main__":
