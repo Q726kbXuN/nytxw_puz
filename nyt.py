@@ -2,6 +2,7 @@
 
 import browser_cookie3
 import requests
+import requests.utils
 import os
 import decompress
 import re
@@ -11,8 +12,12 @@ import sys
 import html
 import datetime
 import time
+import base64
 
 CACHE_DATA = False
+# Debug code to log all URL requests and their responses, set to None
+# to disable logging, any string enables (and is replaced with a log filename)
+LOG_CALLS = None
 
 # These unicode characters are just used to draw the crossword grid to stdout
 BLOCK_LEFT = "\u2590"
@@ -226,7 +231,18 @@ def get_puzzle(url, browser):
         cookies = get_browsers()[browser](domain_name='nytimes.com')
         for _ in range(4):
             # Load the webpage, its inline javascript includes the puzzle data
+            if LOG_CALLS is not None:
+                with open(LOG_CALLS, "a", newline="", encoding="utf-8") as f:
+                    f.write("URL " + url + "\n")
+                    f.write("COOKIES " + json.dumps(cookies, default=str) + "\n")
+                    try:
+                        f.write("COOKIES_RAW " + json.dumps(requests.utils.dict_from_cookiejar(cookies)) + "\n")
+                    except:
+                        pass
             resp = requests.get(url, cookies=cookies).content
+            if LOG_CALLS is not None:
+                with open(LOG_CALLS, "a", newline="", encoding="utf-8") as f:
+                    f.write("RESPONSE " + base64.b64encode(resp).decode("utf-8") + "\n")
             resp = resp.decode("utf-8")
             # Look for the javascript, it's easist here to just use a regex
             m = re.search("(pluribus|window.gameData) *= *['\"](?P<data>.*?)['\"]", resp)
@@ -400,6 +416,12 @@ def main():
         browser = pick_browser()
         url = input("Enter the NY Times crossword URL: ")
         output_fn = input("Enter the output filename: ")
+
+    global LOG_CALLS
+    if LOG_CALLS is not None:
+        LOG_CALLS = output_fn + ".log"
+        with open(LOG_CALLS, "a", newline="", encoding="utf-8") as f:
+            f.write("LOG " + datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") + "\n")
 
     try:
         # url = "https://www.nytimes.com/crosswords/game/daily/2021/06/03"
