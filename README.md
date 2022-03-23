@@ -1,3 +1,9 @@
+**NOTE**
+
+There is a known issue with downloading from the NY Times website after a recent change on their side.  A fix will be coming soon.
+
+----
+
 # NYT Crossword to Puz
 
 ![Logo](other/logo.png)
