@@ -216,6 +216,55 @@ def pick_browser():
     return selection
 
 
+# Internal helper to load a URL, optionally log the data, to make
+# debugging remotely a tiny bit easier
+def get_url(cookies, url):
+    cookies = requests.utils.dict_from_cookiejar(cookies)
+    cookies = requests.utils.cookiejar_from_dict(cookies)
+    if LOG_CALLS is not None:
+        with open(LOG_CALLS, "a", newline="", encoding="utf-8") as f:
+            f.write("URL " + url + "\n")
+            f.write("COOKIES " + json.dumps(cookies, default=str) + "\n")
+            try:
+                f.write("COOKIES_RAW " + json.dumps(requests.utils.dict_from_cookiejar(cookies)) + "\n")
+            except:
+                pass
+    resp = requests.get(url, cookies=cookies).content
+    if LOG_CALLS is not None:
+        with open(LOG_CALLS, "a", newline="", encoding="utf-8") as f:
+            f.write("RESPONSE " + base64.b64encode(resp).decode("utf-8") + "\n")
+    resp = resp.decode("utf-8")
+    return resp
+
+
+def load_cookies(browser):
+    # Pull out the nytimes cookies from the user's browser
+    cookies = get_browsers()[browser](domain_name='nytimes.com')
+    return cookies
+
+
+def get_puzzle_from_id(cookies, puzzle_id):
+    # Get the puzzle itself
+    puzzle_url = f"https://nyt-games-prd.appspot.com/svc/crosswords/v6/puzzle/{puzzle_id}.json"
+    new_format = get_url(cookies, puzzle_url)
+    new_format = json.loads(new_format)
+
+    # The response is formatted somewhat differently than it used to be, so create a format
+    # that looks like it used to
+    resp = new_format["body"][0]
+    resp["meta"] = {}
+    # TODO: Notes might be stored elsewhere, need to verify
+    for cur in ["publicationDate", "title", "editor", "copyright", "constructors", "notes"]:
+        if cur in new_format:
+            resp["meta"][cur] = new_format[cur]
+    resp["dimensions"]["columnCount"] = resp["dimensions"]["width"]
+    resp["dimensions"]["rowCount"] = resp["dimensions"]["height"]
+
+    resp["gamePageData"] = resp
+
+    return resp
+
+
 def get_puzzle(url, browser):
     cache = {}
     if CACHE_DATA:
@@ -225,30 +274,10 @@ def get_puzzle(url, browser):
             with open(".cached.json", "r", encoding="utf-8") as f:
                 cache = json.load(f)
 
-    # Internal helper to load a URL, optionally log the data, to make
-    # debugging remotely a tiny bit easier
-    def get_url(cookies, url):
-        cookies = requests.utils.dict_from_cookiejar(cookies)
-        cookies = requests.utils.cookiejar_from_dict(cookies)
-        if LOG_CALLS is not None:
-            with open(LOG_CALLS, "a", newline="", encoding="utf-8") as f:
-                f.write("URL " + url + "\n")
-                f.write("COOKIES " + json.dumps(cookies, default=str) + "\n")
-                try:
-                    f.write("COOKIES_RAW " + json.dumps(requests.utils.dict_from_cookiejar(cookies)) + "\n")
-                except:
-                    pass
-        resp = requests.get(url, cookies=cookies).content
-        if LOG_CALLS is not None:
-            with open(LOG_CALLS, "a", newline="", encoding="utf-8") as f:
-                f.write("RESPONSE " + base64.b64encode(resp).decode("utf-8") + "\n")
-        resp = resp.decode("utf-8")
-        return resp
-
     if url not in cache:
         print(f"Loading {url}...")
-        # Pull out the nytimes cookies from the user's browser
-        cookies = get_browsers()[browser](domain_name='nytimes.com')
+
+        cookies = load_cookies(browser)
         for _ in range(4):
             # Load the webpage, its inline javascript includes the puzzle data
             resp = get_url(cookies, url)
@@ -285,23 +314,7 @@ def get_puzzle(url, browser):
                 metadata = get_url(cookies, api)
                 metadata = json.loads(metadata)
 
-                # And get the puzzle itself
-                puzzle_url = f"https://nyt-games-prd.appspot.com/svc/crosswords/v6/puzzle/{metadata['id']}.json"
-                new_format = get_url(cookies, puzzle_url)
-                new_format = json.loads(new_format)
-
-                # The response is formatted somewhat differently than it used to be, so create a format
-                # that looks like it used to
-                resp = new_format["body"][0]
-                resp["meta"] = {}
-                # TODO: Notes might be stored elsewhere, need to verify
-                for cur in ["publicationDate", "title", "editor", "copyright", "constructors", "notes"]:
-                    if cur in new_format:
-                        resp["meta"][cur] = new_format[cur]
-                resp["dimensions"]["columnCount"] = resp["dimensions"]["width"]
-                resp["dimensions"]["rowCount"] = resp["dimensions"]["height"]
-
-                resp["gamePageData"] = resp
+                resp = get_puzzle_from_id(cookies, metadata['id'])
 
                 # All done
                 break
@@ -445,9 +458,9 @@ def data_to_puz(puzzle):
         markup = p.markup()
         markup.markup = [0] * (p.width * p.height)
 
-        for cell in data['cells']:
+        for i, cell in enumerate(data['cells']):
             if 'type' in cell and cell['type'] in (NYT_TYPE_CIRCLED, NYT_TYPE_GRAY):
-                markup.markup[cell['index']] = puz.GridMarkup.Circled
+                markup.markup[cell.get('index', i)] = puz.GridMarkup.Circled
 
     # Check for any notes in puzzle (e.g., Sep 11, 2008)
     if data['meta'].get('notes', None) is not None:
