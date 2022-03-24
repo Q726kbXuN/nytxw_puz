@@ -225,25 +225,38 @@ def get_puzzle(url, browser):
             with open(".cached.json", "r", encoding="utf-8") as f:
                 cache = json.load(f)
 
+    # Internal helper to load a URL, optionally log the data, to make
+    # debugging remotely a tiny bit easier
+    def get_url(cookies, url):
+        cookies = requests.utils.dict_from_cookiejar(cookies)
+        cookies = requests.utils.cookiejar_from_dict(cookies)
+        if LOG_CALLS is not None:
+            with open(LOG_CALLS, "a", newline="", encoding="utf-8") as f:
+                f.write("URL " + url + "\n")
+                f.write("COOKIES " + json.dumps(cookies, default=str) + "\n")
+                try:
+                    f.write("COOKIES_RAW " + json.dumps(requests.utils.dict_from_cookiejar(cookies)) + "\n")
+                except:
+                    pass
+        resp = requests.get(url, cookies=cookies).content
+        if LOG_CALLS is not None:
+            with open(LOG_CALLS, "a", newline="", encoding="utf-8") as f:
+                f.write("RESPONSE " + base64.b64encode(resp).decode("utf-8") + "\n")
+        resp = resp.decode("utf-8")
+        return resp
+
     if url not in cache:
         print(f"Loading {url}...")
         # Pull out the nytimes cookies from the user's browser
         cookies = get_browsers()[browser](domain_name='nytimes.com')
         for _ in range(4):
             # Load the webpage, its inline javascript includes the puzzle data
-            if LOG_CALLS is not None:
-                with open(LOG_CALLS, "a", newline="", encoding="utf-8") as f:
-                    f.write("URL " + url + "\n")
-                    f.write("COOKIES " + json.dumps(cookies, default=str) + "\n")
-                    try:
-                        f.write("COOKIES_RAW " + json.dumps(requests.utils.dict_from_cookiejar(cookies)) + "\n")
-                    except:
-                        pass
-            resp = requests.get(url, cookies=cookies).content
-            if LOG_CALLS is not None:
-                with open(LOG_CALLS, "a", newline="", encoding="utf-8") as f:
-                    f.write("RESPONSE " + base64.b64encode(resp).decode("utf-8") + "\n")
-            resp = resp.decode("utf-8")
+            resp = get_url(cookies, url)
+
+            # NY Times is moving to a new system for puzzles, handle both, since 
+            # it doesn't seem to have migrated 100% of the accounts out there
+
+            # Option #1, see if this is the old style encoded javascript blob:
             # Look for the javascript, it's easist here to just use a regex
             m = re.search("(pluribus|window.gameData) *= *['\"](?P<data>.*?)['\"]", resp)
             if m is not None:
@@ -257,9 +270,45 @@ def get_puzzle(url, browser):
                 resp = json.loads(resp)
                 # All done, we can stop retries
                 break
-            else:
-                # Try again
-                time.sleep(1)
+
+            # Option #2, try the new version with a gaming REST endpoint:
+            # Try to find the puzzle description:
+            m = re.search("window\\.gameData *= *(?P<json>{.*?})", resp)
+            if m is not None:
+                # Pull out the puzzle key
+                key = m.group("json")
+                key = json.loads(key)
+                key = key['filename']
+
+                # Request the puzzle meta-data
+                api = f"https://nyt-games-prd.appspot.com/svc/crosswords/v6/puzzle/{key}.json"
+                metadata = get_url(cookies, api)
+                metadata = json.loads(metadata)
+
+                # And get the puzzle itself
+                puzzle_url = f"https://nyt-games-prd.appspot.com/svc/crosswords/v6/puzzle/{metadata['id']}.json"
+                new_format = get_url(cookies, puzzle_url)
+                new_format = json.loads(new_format)
+
+                # The response is formatted somewhat differently than it used to be, so create a format
+                # that looks like it used to
+                resp = new_format["body"][0]
+                resp["meta"] = {}
+                # TODO: Notes might be stored elsewhere, need to verify
+                for cur in ["publicationDate", "title", "editor", "copyright", "constructors", "notes"]:
+                    if cur in new_format:
+                        resp["meta"][cur] = new_format[cur]
+                resp["dimensions"]["columnCount"] = resp["dimensions"]["width"]
+                resp["dimensions"]["rowCount"] = resp["dimensions"]["height"]
+
+                resp["gamePageData"] = resp
+
+                # All done
+                break
+
+            # Something didn't look right, try again
+            time.sleep(1)
+
         cache[url] = resp
         if CACHE_DATA:
             with open(".cached.json", "w", newline="", encoding="utf-8") as f:
@@ -368,10 +417,15 @@ def data_to_puz(puzzle):
     seen = set()
     clues = []
     for cell in data['cells']:
-        for clue in cell['clues']:
+        for clue in cell.get('clues', []):
             if clue not in seen:
                 seen.add(clue)
-                clues.append(latin1ify(html.unescape(data['clues'][clue]['text'])))
+                temp = data['clues'][clue]['text']
+                if isinstance(temp, list):
+                    temp = temp[0]
+                if isinstance(temp, dict):
+                    temp = temp.get("plain", "")
+                clues.append(latin1ify(html.unescape(temp)))
     p.clues = clues
 
     # See if any of the answers is multi-character (rebus)
