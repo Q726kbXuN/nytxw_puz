@@ -1,9 +1,3 @@
-**NOTE**
-
-There is a known issue with downloading from the NY Times website after a recent change on their side.  A fix will be coming soon.
-
-----
-
 # NYT Crossword to Puz
 
 ![Logo](other/logo.png)
@@ -59,6 +53,10 @@ For me personally, I want something that works completely offline, and doesn't r
 * Help?  How do I run this?
 
 Try following [these directions](howto.md).
+
+* I downloaded this a while ago and it stopped working!
+
+Please update to at least version 1.06.  There was a change with how the puzzles are published that broke older versions of this program.
 
 * Anything else?
 
