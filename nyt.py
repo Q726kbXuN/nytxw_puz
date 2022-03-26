@@ -292,10 +292,16 @@ def get_puzzle(url, browser):
             if m is not None:
                 # Pull out the data element
                 resp = m.group("data")
-                # Which is url-encoded
-                resp = decompress.decode(resp)
-                # And LZString compressed
-                resp = decompress.decompress(resp)
+                if "%" in resp:
+                    # Which is url-encoded
+                    resp = decompress.decode(resp)
+                    # And LZString compressed
+                    resp = decompress.decompress(resp)
+                else:
+                    # New format, this is now base64 encoded
+                    resp = base64.b64decode(resp).decode("utf-8")
+                    # And _then_ url-encoded
+                    resp = decompress.decode(resp)
                 # And a JSON blob
                 resp = json.loads(resp)
                 # All done, we can stop retries
@@ -307,10 +313,6 @@ def get_puzzle(url, browser):
             if m is not None:
                 # Pull out the puzzle key
                 key = m.group("json")
-                # Might be base64 encoded
-                if not key.startswith("{"):
-                    key = base64.b64decode(key).decode("utf-8")
-                    key = unquote(key)
                 key = json.loads(key)
                 key = key['filename']
 
