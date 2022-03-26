@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from email.quoprimime import unquote
 import browser_cookie3
 import requests
 import requests.utils
@@ -306,6 +307,10 @@ def get_puzzle(url, browser):
             if m is not None:
                 # Pull out the puzzle key
                 key = m.group("json")
+                # Might be base64 encoded
+                if not key.startswith("{"):
+                    key = base64.b64decode(key).decode("utf-8")
+                    key = unquote(key)
                 key = json.loads(key)
                 key = key['filename']
 
