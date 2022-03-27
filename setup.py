@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from distutils.core import setup
+from setuptools import find_packages
 import py2exe
 
 
@@ -17,5 +18,9 @@ setup(
             'dist_dir': 'dist',
         }
     },
+    packages=find_packages(
+        where='src',
+        exclude=['other', 'images'],
+    ),
     zipfile=None,
 )
