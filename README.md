@@ -56,7 +56,7 @@ Try following [these directions](howto.md).
 
 * I downloaded this a while ago and it stopped working!
 
-Please update to at least version 1.06.  There was a change with how the puzzles are published that broke older versions of this program.
+Please update to at least version 1.07.  There was a change with how the puzzles are published that broke older versions of this program.
 
 * Anything else?
 
