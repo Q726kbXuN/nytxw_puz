@@ -14,6 +14,7 @@ import html
 import datetime
 import time
 import base64
+import version
 
 CACHE_DATA = False
 # Debug code to log all URL requests and their responses, set to None
@@ -477,6 +478,11 @@ def data_to_puz(puzzle):
     # All done
     return p
 
+def version_warn():
+    ver = version.get_ver_from_github()
+    if ver is not None:
+        if ver > version.VERSION:
+            print(f"Info: Version {ver} is available, consider upgrading if any issues occur")
 
 def main():
     if len(sys.argv) == 4:
@@ -487,9 +493,16 @@ def main():
                 print(f"  {key}")
             exit(1)
     else:
+        version_warn()
         browser = pick_browser()
         url = input("Enter the NY Times crossword URL: ")
+        if len(url) == 0:
+            print("No URL specified")
+            exit(1)
         output_fn = input("Enter the output filename: ")
+        if len(url) == 0:
+            print("No output file specified")
+            exit(1)
 
     global LOG_CALLS
     if LOG_CALLS is not None:
@@ -518,7 +531,7 @@ def main():
         import traceback
         traceback.print_exc()
         print("ERROR! " * 10)
-        print("Settings: ", [browser, url, output_fn])
+        print("Settings: ", [browser, url, output_fn, version.VERSION])
         print("")
         print("Please report issues to https://www.reddit.com/user/nobody514/")
         print("")
