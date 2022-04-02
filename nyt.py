@@ -483,6 +483,7 @@ def version_warn():
     if ver is not None:
         if ver > version.VERSION:
             print(f"Info: Version {ver} is available, consider upgrading if any issues occur")
+            print("")
 
 def main():
     if len(sys.argv) == 4:

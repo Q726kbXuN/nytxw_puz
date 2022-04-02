@@ -4,10 +4,26 @@ import subprocess
 from zipfile import ZipFile
 import os
 import hashlib
+import re
+import version
 
-cmd = "python setup.py py2exe"
-print("$ " + cmd)
-subprocess.check_call(cmd, shell=True)
+def run(cmd):
+    print(cmd)
+    subprocess.check_call(cmd, shell=True)
+
+with open("version.py", "r", encoding="utf-8") as f:
+    data = f.read()
+data = re.sub(
+    '(?P<pre>VERSION *= *"[0-9]+\\.)(?P<ver>[0-9]+)(?P<suf>")', 
+    lambda m: f"{m.group('pre')}{int(m.group('ver'))+1:02d}{m.group('suf')}", 
+    data,
+)
+with open("version.py", "w", newline="", encoding="utf-8") as f:
+    f.write(data)
+
+run("git add version.py")
+run(f'git commit -m "Update version to {version.get_ver_from_source(data)}"')
+run("python setup.py py2exe")
 
 def get_dist_files():
     dirs = [("dist", "")]
