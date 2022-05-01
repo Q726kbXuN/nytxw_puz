@@ -399,6 +399,24 @@ def latin1ify(s):
     return s
 
 
+def gridchar(c):
+    if 'answer' in c:
+        # The usual case: just one letter
+        return latin1ify(c['answer'][0])
+    if 'moreAnswers' in c:
+        # 2022-05-01 'Blank Expressions' includes grid answers without
+        # an actual 'answer', only an array of 'moreAnswers'
+        for a in c['moreAnswers']:
+            if len(a) == 1:
+                # First single-character one
+                return latin1ify(a)
+        # No single-character answers
+        return 'X'
+
+    # Black square
+    return '.'
+
+
 def data_to_puz(puzzle):
     p = puz.Puzzle()
     data = puzzle['gamePageData']
@@ -429,8 +447,7 @@ def data_to_puz(puzzle):
     p.width = data["dimensions"]["columnCount"]
 
     # Fill out the main grid
-    p.solution = ''.join(latin1ify(x['answer'][0]) if 'answer' in x
-                         else '.' for x in data['cells'])
+    p.solution = ''.join(gridchar(x) for x in data['cells'])
     p.fill = ''.join('-' if 'answer' in x else '.' for x in data['cells'])
 
     # And the clues, they're HTML text here, so decode them, Across Lite expects them in
