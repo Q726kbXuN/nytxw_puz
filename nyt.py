@@ -37,6 +37,8 @@ NYT_TYPE_INVISIBLE = 4 # An "invisible" cell, generally something outside the ma
 LATIN1_SUBS = {
     # For converting clues etc. into Latin-1 (ISO-8859-1) format;
     # value None means let the encoder insert a Latin-1 equivalent
+    u"\n": u" ",
+    u"\r": u" ",
     u'“': u'"',
     u'”': u'"',
     u'‘': u"'",
@@ -57,9 +59,9 @@ LATIN1_SUBS = {
     u'■': None,
     u'☐': None,
     u'→': u'-->',
-    u'♣': None,
+    u'♣': "Clubs",
     u'√': None,
-    u'♠': None,
+    u'♠': "Spades",
     u'✓': None,
     u'♭': None,
     u'♂': None,
@@ -71,8 +73,8 @@ LATIN1_SUBS = {
     u'❤︎': None,
     u'✔': None,
     u'⚓': None,
-    u'♦': None,
-    u'♥': None,
+    u'♦': "Diamonds",
+    u'♥': "Hearts",
     u'☹': None,
     u'☮': None,
     u'☘': None,
@@ -381,6 +383,8 @@ def print_puzzle(p):
 
 
 def latin1ify(s):
+    source_string = s
+
     # Make a Unicode string compliant with the Latin-1 (ISO-8859-1) character
     # set; the Across Lite v1.3 format only supports Latin-1 encoding
 
@@ -396,6 +400,13 @@ def latin1ify(s):
     for pattern, repl in HTML_TO_TEXT_RULES:
         s = re.sub(pattern, repl, s)
 
+    s = s.strip()
+
+    # Warn on anything left over
+    for x in s:
+        if not ' ' <= x <= '~':
+            print(f"Warning: {json.dumps(x)} will likely cause problems in {s} from {source_string}")
+
     return s
 
 
@@ -406,7 +417,11 @@ def gridchar(c):
     if 'moreAnswers' in c:
         # 2022-05-01 'Blank Expressions' includes grid answers without
         # an actual 'answer', only an array of 'moreAnswers'
-        for a in c['moreAnswers']:
+        more = c.get('moreAnswers', [])
+        if isinstance(more, dict):
+            more = more['valid']
+
+        for a in more:
             if len(a) == 1:
                 # First single-character one
                 return latin1ify(a)
@@ -415,6 +430,24 @@ def gridchar(c):
 
     # Black square
     return '.'
+
+
+def gridrebus(c):
+    if 'answer' in c:
+        if len(c['answer']) > 1:
+            # This cell has a rebus answer, but first, see if we can find a 
+            # answer that's already easy to use
+            more = c.get('moreAnswers', [])
+            if isinstance(more, dict):
+                more = more['valid']
+            answers = [c['answer']] + more
+            for possible in answers:
+                if possible == latin1ify(possible) and len(possible) > 1:
+                    # This is a possibility that works well
+                    return possible
+            # Nothing useful, just use the first clue
+            return answers[0]
+    return None
 
 
 def data_to_puz(puzzle):
@@ -473,10 +506,7 @@ def data_to_puz(puzzle):
 
         # And find all the rebus answers and add them to the data
         for cell in data['cells']:
-            if 'answer' in cell and len(cell['answer']) > 1:
-                rebus.add_rebus(latin1ify(cell['answer']))
-            else:
-                rebus.add_rebus(None)
+            rebus.add_rebus(gridrebus(cell))
 
     # See if any grid squares are marked up with circles
     if any(x['type'] in (NYT_TYPE_CIRCLED, NYT_TYPE_GRAY) for x in data['cells'] if 'type' in x):
