@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # This next line must be exactly this format
-VERSION = "1.11"
+VERSION = "1.12"
 # The location of this file on GitHub
 SELF_URL = "https://raw.githubusercontent.com/Q726kbXuN/nytxw_puz/master/version.py"
 
