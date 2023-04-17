@@ -4,9 +4,7 @@ from distutils.core import setup
 from setuptools import find_packages
 import py2exe
 
-
-setup(
-    name='nytxw_puz',
+py2exe.freeze(
     console=[{
         'script': 'nyt.py',
         'dest_base': 'nytxw_puz',
@@ -18,9 +16,5 @@ setup(
             'dist_dir': 'dist',
         }
     },
-    packages=find_packages(
-        where='src',
-        exclude=['other', 'images'],
-    ),
     zipfile=None,
 )
