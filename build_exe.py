@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+UPDATE_VERSION = True
+PATCH_BROWSER_COOKIE3 = False
+
 import subprocess
 from zipfile import ZipFile
 import os
@@ -11,18 +14,27 @@ def run(cmd):
     print(cmd)
     subprocess.check_call(cmd, shell=True)
 
-with open("version.py", "r", encoding="utf-8") as f:
-    data = f.read()
-data = re.sub(
-    '(?P<pre>VERSION *= *"[0-9]+\\.)(?P<ver>[0-9]+)(?P<suf>")', 
-    lambda m: f"{m.group('pre')}{int(m.group('ver'))+1:02d}{m.group('suf')}", 
-    data,
-)
-with open("version.py", "w", newline="", encoding="utf-8") as f:
-    f.write(data)
+if UPDATE_VERSION:
+    with open("version.py", "r", encoding="utf-8") as f:
+        data = f.read()
+    data = re.sub(
+        '(?P<pre>VERSION *= *"[0-9]+\\.)(?P<ver>[0-9]+)(?P<suf>")', 
+        lambda m: f"{m.group('pre')}{int(m.group('ver'))+1:02d}{m.group('suf')}", 
+        data,
+    )
+    with open("version.py", "w", newline="", encoding="utf-8") as f:
+        f.write(data)
 
-run("git add version.py")
-run(f'git commit -m "Update version to {version.get_ver_from_source(data)}"')
+    run("git add version.py")
+    run(f'git commit -m "Update version to {version.get_ver_from_source(data)}"')
+
+if PATCH_BROWSER_COOKIE3:
+    import browser_cookie3
+    with open(os.path.join("patch", "patched_init.py"), "rt") as f:
+        data = f.read()
+    with open(browser_cookie3.__file__, "wt") as f:
+        f.write(data)
+
 run("python setup.py py2exe")
 
 def get_dist_files():
