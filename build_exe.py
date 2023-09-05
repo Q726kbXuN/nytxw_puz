@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 UPDATE_VERSION = True
-PATCH_BROWSER_COOKIE3 = False
+# PATCH_BROWSER_COOKIE3 = False
 
 import subprocess
 from zipfile import ZipFile
@@ -28,12 +28,12 @@ if UPDATE_VERSION:
     run("git add version.py")
     run(f'git commit -m "Update version to {version.get_ver_from_source(data)}"')
 
-if PATCH_BROWSER_COOKIE3:
-    import browser_cookie3
-    with open(os.path.join("patch", "patched_init.py"), "rt") as f:
-        data = f.read()
-    with open(browser_cookie3.__file__, "wt") as f:
-        f.write(data)
+# if PATCH_BROWSER_COOKIE3:
+#     import browser_cookie3
+#     with open(os.path.join("patch", "patched_init.py"), "rt") as f:
+#         data = f.read()
+#     with open(browser_cookie3.__file__, "wt") as f:
+#         f.write(data)
 
 run("python setup.py py2exe")
 

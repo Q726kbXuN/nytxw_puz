@@ -103,74 +103,10 @@ HTML_TO_TEXT_RULES = [
 ]
 
 
-# Work around https://github.com/borisbabic/browser_cookie3/issues/104
-def chrome_bugfix(**kargs):
-    args = {
-        'linux_cookies':[
-                '~/.config/google-chrome/Default/Cookies',
-                '~/.config/google-chrome-beta/Default/Cookies'
-            ],
-        'windows_cookies':[
-                {'env':'APPDATA', 'path':'..\\Local\\Google\\Chrome\\User Data\\Default\\Cookies'},
-                {'env':'APPDATA', 'path':'..\\Local\\Google\\Chrome\\User Data\\Default\\Network\\Cookies'},
-                {'env':'LOCALAPPDATA', 'path':'Google\\Chrome\\User Data\\Default\\Cookies'},
-                {'env':'LOCALAPPDATA', 'path':'Google\\Chrome\\User Data\\Default\\Network\\Cookies'},
-                {'env':'APPDATA', 'path':'Google\\Chrome\\User Data\\Default\\Cookies'},
-                {'env':'APPDATA', 'path':'Google\\Chrome\\User Data\\Default\\Network\\Cookies'}
-            ],
-        'osx_cookies': ['~/Library/Application Support/Google/Chrome/Default/Cookies'],
-        'windows_keys': [
-                {'env':'APPDATA', 'path':'..\\Local\\Google\\Chrome\\User Data\\Local State'},
-                {'env':'LOCALAPPDATA', 'path':'Google\\Chrome\\User Data\\Local State'},
-                {'env':'APPDATA', 'path':'Google\\Chrome\\User Data\\Local State'}
-            ],
-        'os_crypt_name':'chrome',
-        'osx_key_service' : 'Chrome Safe Storage',
-        'osx_key_user' : 'Chrome'
-    }
-    for key, value in kargs.items():
-        args[key] = value    
-
-    cookies = browser_cookie3.ChromiumBased(browser='Chrome', **args)
-    return cookies.load()
-
-
-# Work around https://github.com/borisbabic/browser_cookie3/issues/104
-def chromium_bugfix(**kargs):
-    args = {
-        'linux_cookies':['~/.config/chromium/Default/Cookies'],
-        'windows_cookies':[
-                {'env':'APPDATA', 'path':'..\\Local\\Chromium\\User Data\\Default\\Cookies'},
-                {'env':'APPDATA', 'path':'..\\Local\\Chromium\\User Data\\Default\\Network\\Cookies'},
-                {'env':'LOCALAPPDATA', 'path':'Chromium\\User Data\\Default\\Cookies'},
-                {'env':'LOCALAPPDATA', 'path':'Chromium\\User Data\\Default\\Network\\Cookies'},
-                {'env':'APPDATA', 'path':'Chromium\\User Data\\Default\\Cookies'},
-                {'env':'APPDATA', 'path':'Chromium\\User Data\\Default\\Network\\Cookies'}
-        ],
-        'osx_cookies': ['~/Library/Application Support/Chromium/Default/Cookies'],
-        'windows_keys': [
-                {'env':'APPDATA', 'path':'..\\Local\\Chromium\\User Data\\Local State'},
-                {'env':'LOCALAPPDATA', 'path':'Chromium\\User Data\\Local State'},
-                {'env':'APPDATA', 'path':'Chromium\\User Data\\Local State'}
-        ],
-        'os_crypt_name':'chromium',
-        'osx_key_service' : 'Chromium Safe Storage',
-        'osx_key_user' : 'Chromium'
-    }
-    for key, value in kargs.items():
-        args[key] = value    
-
-    cookies = browser_cookie3.ChromiumBased(browser='Chromium', **args)
-    return cookies.load()
-
-
 def get_browsers():
     return {
-        # Work around https://github.com/borisbabic/browser_cookie3/issues/104
-        # "Chrome": browser_cookie3.chrome,
-        # "Chromium": browser_cookie3.chromium,
-        "Chrome": chrome_bugfix,
-        "Chromium": chromium_bugfix,
+        "Chrome": browser_cookie3.chrome,
+        "Chromium": browser_cookie3.chromium,
 
         "Opera": browser_cookie3.opera,
         "Microsoft Edge": browser_cookie3.edge,
@@ -178,19 +114,25 @@ def get_browsers():
     }
 
 
-def pick_browser():
-    # Ask the user for which browser they want to use
+def get_user_filename(filename):
     if os.name == "nt":
         homedir = os.environ.get("APPDATA", os.path.expanduser("~"))
     else:
         homedir = format(os.path.expanduser("~"))
+    return os.path.join(homedir, filename)
 
+
+def pick_browser():
+    # Ask the user for which browser they want to use
     options = get_browsers()
-    settings_file = os.path.join(homedir, 'nytxw_puz.json')
+    settings_file = get_user_filename('nytxw_puz.json')
     settings = {}
     if os.path.isfile(settings_file):
         with open(settings_file) as f:
             settings = json.load(f)
+
+    if os.path.isfile(get_cookie_cache_filename()):
+        options["Cached Cookies"] = None
 
     default = settings.get('default')
     while True:
@@ -223,7 +165,6 @@ def pick_browser():
 # Internal helper to load a URL, optionally log the data, to make
 # debugging remotely a tiny bit easier
 def get_url(cookies, url):
-    cookies = requests.utils.dict_from_cookiejar(cookies)
     cookies = requests.utils.cookiejar_from_dict(cookies)
     if LOG_CALLS is not None:
         with open(LOG_CALLS, "a", newline="", encoding="utf-8") as f:
@@ -241,15 +182,28 @@ def get_url(cookies, url):
     return resp
 
 
+def get_cookie_cache_filename():
+    return get_user_filename("nytxw_puz.cookies.json")
+
+
 def load_cookies(browser):
     # Pull out the nytimes cookies from the user's browser
-    cookies = get_browsers()[browser](domain_name='nytimes.com')
+    # Cache the information to avoid a roundtrip to the browser if possible
+    if browser == "Cached Cookies":
+        with open(get_cookie_cache_filename(), "rt") as f:
+            cookies = json.load(f)
+    else:
+        cookies = get_browsers()[browser](domain_name='nytimes.com')
+        cookies = requests.utils.dict_from_cookiejar(cookies)
+        with open(get_cookie_cache_filename(), "wt") as f:
+            json.dump(cookies, f)
+
     return cookies
 
 
 def get_puzzle_from_id(cookies, puzzle_id):
     # Get the puzzle itself
-    puzzle_url = f"https://nyt-games-prd.appspot.com/svc/crosswords/v6/puzzle/{puzzle_id}.json"
+    puzzle_url = f"https://www.nytimes.com/svc/crosswords/v6/puzzle/{puzzle_id}.json"
     new_format = get_url(cookies, puzzle_url)
     new_format = json.loads(new_format)
 
@@ -320,7 +274,7 @@ def get_puzzle(url, browser):
                 key = key['filename']
 
                 # Request the puzzle meta-data
-                api = f"https://nyt-games-prd.appspot.com/svc/crosswords/v6/puzzle/{key}.json"
+                api = f"https://www.nytimes.com/svc/crosswords/v6/puzzle/{key}.json"
                 metadata = get_url(cookies, api)
                 metadata = json.loads(metadata)
 
@@ -548,7 +502,7 @@ def main():
             print("No URL specified")
             exit(1)
         output_fn = input("Enter the output filename: ")
-        if len(url) == 0:
+        if len(output_fn) == 0:
             print("No output file specified")
             exit(1)
 
