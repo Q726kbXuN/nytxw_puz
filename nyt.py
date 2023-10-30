@@ -15,6 +15,8 @@ import datetime
 import time
 import base64
 import version
+if sys.version_info >= (3, 11): from datetime import UTC
+else: import datetime as datetime_fix; UTC=datetime_fix.timezone.utc
 
 CACHE_DATA = False
 # Debug code to log all URL requests and their responses, set to None
@@ -510,7 +512,7 @@ def main():
     if LOG_CALLS is not None:
         LOG_CALLS = output_fn + ".log"
         with open(LOG_CALLS, "a", newline="", encoding="utf-8") as f:
-            f.write("LOG " + datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S") + "\n")
+            f.write("LOG " + datetime.datetime.now(UTC).replace(tzinfo=None).strftime("%Y-%m-%d %H:%M:%S") + "\n")
 
     try:
         # url = "https://www.nytimes.com/crosswords/game/daily/2021/06/03"
