@@ -58,6 +58,10 @@ Try following [these directions](howto.md).
 
 Please update to at least version 1.07.  There was a change with how the puzzles are published that broke older versions of this program.
 
+* I just want the .puz files!
+
+You can download some puz files from [this archive](https://q726kbxun.github.io/xwords/xwords.html).
+
 * Anything else?
 
 Feel free to contact me on [reddit](https://www.reddit.com/user/nobody514/).
