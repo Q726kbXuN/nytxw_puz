@@ -34,3 +34,4 @@
 dist/*
 build/*
 *.spec
+n.egg-info/*

@@ -52,7 +52,7 @@ For me personally, I want something that works completely offline, and doesn't r
 
 * Help?  How do I run this?
 
-Try following [these directions](howto.md).
+Try following [these directions](howto.md), or [these directions](howto_mac.md) for Mac users.
 
 * I downloaded this a while ago and it stopped working!
 

@@ -528,8 +528,10 @@ def main():
 
         # And turn the puzzle data from NYT into a puz data structure
         output = data_to_puz(puzzle)
-        output.save(output_fn)
+        output.save(os.path.expanduser(output_fn))
         print(f"Created {output_fn}")
+        if sys.platform == 'darwin':
+            input("Press enter to continue...")
     except:
         print("ERROR! " * 10)
         import traceback
