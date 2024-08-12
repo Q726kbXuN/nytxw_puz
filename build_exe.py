@@ -3,23 +3,27 @@
 UPDATE_VERSION = True
 # PATCH_BROWSER_COOKIE3 = False
 
-import subprocess
 from zipfile import ZipFile
-import os
 import hashlib
+import os
+import platform
 import re
+import shutil
+import subprocess
 import version
 
 def run(cmd):
-    print(cmd)
+    print("$ " + cmd)
     subprocess.check_call(cmd, shell=True)
 
 def get_dist_files(target_zip_name):
+    if isinstance(target_zip_name, str):
+        target_zip_name = {target_zip_name}
     dirs = [("dist", "")]
     while len(dirs) > 0:
         dirname, pretty = dirs.pop(0)
         for cur in os.listdir(dirname):
-            if cur != target_zip_name:
+            if cur not in target_zip_name:
                 fn = os.path.join(dirname, cur)
                 pn = cur if len(pretty) == 0 else pretty + "/" + cur
                 if os.path.isfile(fn):
@@ -28,6 +32,7 @@ def get_dist_files(target_zip_name):
                     dirs.append((fn, pn))
 
 def build_windows():
+    clean_dirs('build', 'dist')
     if UPDATE_VERSION:
         with open("version.py", "r", encoding="utf-8") as f:
             data = f.read()
@@ -74,12 +79,26 @@ def build_windows():
         for hash, name in hashes:
             print(f"{name}: {hash.hexdigest()}")
 
-def build_mac():
-    run('pyinstaller nyt.py --onefile')
+def clean_dirs(*dir_names):
+    for cur in dir_names:
+        if os.path.isdir(cur):
+            print(f"$ rm -rf {cur}")
+            shutil.rmtree(cur)
 
-    zip_name = os.path.join("dist", "nytxw_puz_mac.zip")
+def build_mac():
+    # clean_dirs('build', 'dist')
+    # run('pyinstaller nyt.py --onefile')
+
+    if platform.processor() == 'arm':
+        dest_zip = 'nytxw_puz_mac.zip'
+    elif platform.processor() == 'i386':
+        dest_zip = 'nytxw_puz_mac_x64.zip'
+    else:
+        raise Exception(platform.processor())
+
+    zip_name = os.path.join("dist", dest_zip)
     with ZipFile(zip_name, 'w') as zipf:
-        for fn, pn in get_dist_files("nytxw_puz_mac.zip"):
+        for fn, pn in get_dist_files(dest_zip):
             zipf.write(fn, pn)
 
 if os.name == 'nt':
@@ -87,3 +106,16 @@ if os.name == 'nt':
 else:
     build_mac()
 
+r'''
+#### Notes on x64 build ################################
+
+arch -x86_64 zsh
+export PATH=/usr/local/bin:$PATH$ 
+
+python3 -m venv .venv
+. .venv/bin/activate 
+python3 -m pip install -r requirements.mac.txt
+
+./build_exe.py
+
+'''
