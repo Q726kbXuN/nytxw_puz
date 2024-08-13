@@ -86,8 +86,8 @@ def clean_dirs(*dir_names):
             shutil.rmtree(cur)
 
 def build_mac():
-    # clean_dirs('build', 'dist')
-    # run('pyinstaller nyt.py --onefile')
+    clean_dirs('build', 'dist')
+    run('pyinstaller nyt.py --onefile')
 
     if platform.processor() == 'arm':
         dest_zip = 'nytxw_puz_mac.zip'
@@ -105,17 +105,3 @@ if os.name == 'nt':
     build_windows()
 else:
     build_mac()
-
-r'''
-#### Notes on x64 build ################################
-
-arch -x86_64 zsh
-export PATH=/usr/local/bin:$PATH$ 
-
-python3 -m venv .venv
-. .venv/bin/activate 
-python3 -m pip install -r requirements.mac.txt
-
-./build_exe.py
-
-'''

@@ -1,0 +1,61 @@
+
+# These directions build a version of Python that should work on Mac down to 
+# Big Sur, and includes directions to build both x86 and Arm images.  This 
+# version is then used to build the deployment packages.
+
+
+# --- Set the target Python version to use for the build --------------------------------------------------------------
+export PYTHON_VER=3.12.5
+export PYTHON_MAJOR_VER=`echo ${PYTHON_VER} | python -c 'import sys;print(".".join(sys.stdin.read().strip().split(".")[:2]))';`
+
+# --- Pick one of the two following archs to build for ----------------------------------------------------------------
+export TARGET_ARCH=x86_64
+export TARGET_ARCH=arm64
+
+# --- Make sure to set the Mac deployment target for Big Sur ----------------------------------------------------------
+# https://stackoverflow.com/questions/76223414/pyinstaller-bundle-crashing-on-macos-12-due-to-python
+export MACOSX_DEPLOYMENT_TARGET=11.0
+
+# --- Open a zsh prompt to perform the work in on the correct arch ----------------------------------------------------
+arch -${TARGET_ARCH} zsh
+
+# Make sure we don't pull in any other archs in the path
+# (Note that these directions assume we have Brew installed, and it can be installed in each arch side-by-side)
+if [[ "${TARGET_ARCH}" == "x86_64" ]]; then
+    export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+else
+    export PATH=/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+fi
+
+# Some pre-reqs that we'll need
+brew install b2sum
+brew install gdbm
+brew install tcl-tk
+
+# Grab python and put it in an arch specific folder
+cd /code
+curl https://www.python.org/ftp/python/${PYTHON_VER}/Python-${PYTHON_VER}.tgz -o Python-${PYTHON_VER}.tgz
+tar xvzf Python-${PYTHON_VER}.tgz
+mv Python-${PYTHON_VER} python_${TARGET_ARCH}
+rm Python-${PYTHON_VER}.tgz
+
+# Disable tkinter, we don't need it, and likely don't have the pre-reqs
+cd /code/python_${TARGET_ARCH}
+echo '*disabled*'>>Modules/Setup
+echo '_tkinter'>>Modules/Setup
+
+# Configure Python and build it
+./configure --enable-framework --enable-optimizations ; make -j 8
+
+# Make sure we can find the shared library since we won't be installing this executable
+install_name_tool -change /Library/Frameworks/Python.framework/Versions/${PYTHON_MAJOR_VER}/Python @executable_path/Python.framework/Versions/${PYTHON_MAJOR_VER}/Python python.exe
+
+# --- Build the deployment package ------------------------------------------------------------------------------------
+cd /code/nytxw_puz
+rm -rf .venv
+/code/python_${TARGET_ARCH}/python.exe -m venv .venv
+. .venv/bin/activate
+python3 -m pip install -r requirements.mac.txt
+
+# Show the results
+./build_exe.py ; ls -l dist/*zip
