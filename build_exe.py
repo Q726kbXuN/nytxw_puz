@@ -33,19 +33,19 @@ def get_dist_files(target_zip_name):
 
 def build_windows():
     clean_dirs('build', 'dist')
-    # if UPDATE_VERSION:
-    #     with open("version.py", "r", encoding="utf-8") as f:
-    #         data = f.read()
-    #     data = re.sub(
-    #         '(?P<pre>VERSION *= *"[0-9]+\\.)(?P<ver>[0-9]+)(?P<suf>")', 
-    #         lambda m: f"{m.group('pre')}{int(m.group('ver'))+1:02d}{m.group('suf')}", 
-    #         data,
-    #     )
-    #     with open("version.py", "w", newline="", encoding="utf-8") as f:
-    #         f.write(data)
+    if UPDATE_VERSION:
+        with open("version.py", "r", encoding="utf-8") as f:
+            data = f.read()
+        data = re.sub(
+            '(?P<pre>VERSION *= *"[0-9]+\\.)(?P<ver>[0-9]+)(?P<suf>")', 
+            lambda m: f"{m.group('pre')}{int(m.group('ver'))+1:02d}{m.group('suf')}", 
+            data,
+        )
+        with open("version.py", "w", newline="", encoding="utf-8") as f:
+            f.write(data)
 
-    #     run("git add version.py")
-    #     run(f'git commit -m "Update version to {version.get_ver_from_source(data)}"')
+        run("git add version.py")
+        run(f'git commit -m "Update version to {version.get_ver_from_source(data)}"')
 
     # if PATCH_BROWSER_COOKIE3:
     #     import browser_cookie3
