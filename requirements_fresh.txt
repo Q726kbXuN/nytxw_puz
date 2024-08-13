@@ -11,7 +11,7 @@ importlib-metadata
 jeepney
 keyring
 pbkdf2
-py2exe
+# py2exe
 pyaes
 pycparser
 pycryptodome

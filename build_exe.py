@@ -33,19 +33,19 @@ def get_dist_files(target_zip_name):
 
 def build_windows():
     clean_dirs('build', 'dist')
-    if UPDATE_VERSION:
-        with open("version.py", "r", encoding="utf-8") as f:
-            data = f.read()
-        data = re.sub(
-            '(?P<pre>VERSION *= *"[0-9]+\\.)(?P<ver>[0-9]+)(?P<suf>")', 
-            lambda m: f"{m.group('pre')}{int(m.group('ver'))+1:02d}{m.group('suf')}", 
-            data,
-        )
-        with open("version.py", "w", newline="", encoding="utf-8") as f:
-            f.write(data)
+    # if UPDATE_VERSION:
+    #     with open("version.py", "r", encoding="utf-8") as f:
+    #         data = f.read()
+    #     data = re.sub(
+    #         '(?P<pre>VERSION *= *"[0-9]+\\.)(?P<ver>[0-9]+)(?P<suf>")', 
+    #         lambda m: f"{m.group('pre')}{int(m.group('ver'))+1:02d}{m.group('suf')}", 
+    #         data,
+    #     )
+    #     with open("version.py", "w", newline="", encoding="utf-8") as f:
+    #         f.write(data)
 
-        run("git add version.py")
-        run(f'git commit -m "Update version to {version.get_ver_from_source(data)}"')
+    #     run("git add version.py")
+    #     run(f'git commit -m "Update version to {version.get_ver_from_source(data)}"')
 
     # if PATCH_BROWSER_COOKIE3:
     #     import browser_cookie3
@@ -54,7 +54,8 @@ def build_windows():
     #     with open(browser_cookie3.__file__, "wt") as f:
     #         f.write(data)
 
-    run("python setup.py py2exe")
+    # run("python setup.py py2exe")
+    run("pyinstaller nyt.py --onefile")
 
     zip_name = os.path.join("dist", "nytxw_puz.zip")
     with ZipFile(zip_name, 'w') as zipf:
