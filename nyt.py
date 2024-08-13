@@ -37,60 +37,55 @@ NYT_TYPE_GRAY = 3      # A cell filled in as gray
 NYT_TYPE_INVISIBLE = 4 # An "invisible" cell, generally something outside the main grid
 
 LATIN1_SUBS = {
-    # For converting clues etc. into Latin-1 (ISO-8859-1) format;
-    # value None means let the encoder insert a Latin-1 equivalent
-    u"\n": u" ",
-    u"\r": u" ",
-    u'“': u'"',
-    u'”': u'"',
-    u'‘': u"'",
-    u'’': u"'",
-    u'–': u'-',
-    u'—': u'--',
-    u'…': u'...',
-    u'№': u'No.',
-    u'π': u'pi',
-    u'€': u'EUR',
-    u'•': u'*',
-    u'†': u'[dagger]',
-    u'‡': u'[double dagger]',
-    u'™': u'[TM]',
-    u'‹': u'<',
-    u'›': u'>',
-    u'←': u'<--',
-    u'■': None,
-    u'☐': None,
-    u'→': u'-->',
-    u'♣': "Clubs",
-    u'√': None,
-    u'♠': "Spades",
-    u'✓': None,
-    u'♭': None,
-    u'♂': None,
-    u'★': u'*',
-    u'θ': u'theta',
-    u'β': u'beta',
-    u'Č': None,
-    u'𝚫': u'Delta',
-    u'❤︎': None,
-    u'✔': None,
-    u'⚓': None,
-    u'♦': "Diamonds",
-    u'♥': "Hearts",
-    u'☹': None,
-    u'☮': None,
-    u'☘': None,
-    u'◯': None,
-    u'▢': None,
-    u'∑': None,
-    u'∃': None,
-    u'↓': None,
-    u'⁎': u'*',
-    u'η': u'eta',
-    u'α': u'alpha',
-    u'Ω': u'Omega',
-    u'ō': None,
+    # For converting clues etc. into Latin-1 (ISO-8859-1) format
+    10: " ", 13: " ", 142: "", 160: " ", 161: "!", 162: "cents", 163: "Pounds", 165: "Yen", 167: "[Section sign]", 
+    169: "[Copyright symbol]", 172: "[not]", 173: "-", 174: "[Registered trademark symbol]", 176: "degrees", 
+    177: "plus-minus", 180: "'", 183: "*", 186: "degrees", 189: "1/2", 191: "?", 192: "A", 193: "A", 194: "A", 
+    196: "A", 198: "AE", 199: "C", 200: "E", 201: "E", 202: "E", 203: "E", 205: "I", 206: "I", 209: "N", 211: "O", 
+    214: "O", 216: "O", 220: "U", 224: "a", 225: "a", 226: "a", 227: "a", 228: "a", 229: "a", 231: "c", 232: "e", 
+    233: "e", 234: "e", 235: "e", 236: "i", 237: "i", 238: "i", 239: "i", 241: "n", 242: "o", 243: "o", 244: "o", 
+    246: "o", 247: "/", 248: "o", 249: "u", 250: "u", 251: "u", 252: "u", 268: "C", 269: "c", 333: "o", 699: "'", 
+    710: "", 931: "[Greek letter sigma]", 945: "[Greek letter alpha]", 946: "[Greek letter beta]", 951: "n", 
+    952: "[Greek letter theta]", 960: "Pi", 961: "[Greek letter rho]", 968: "[Greek letter psi]", 8205: "", 8211: "-", 
+    8212: "-", 8216: "'", 8217: "'", 8220: "\"", 8221: "\"", 8224: "[Dagger mark]", 8226: "*", 8230: "...", 8323: "3", 
+    8364: "Euro", 8383: "[Bitcoin]", 8592: "[Left arrow]", 8593: "[Up arrow]", 8594: "[Right arrow]", 
+    8595: "[Down arrow]", 8730: "[Square root]", 8734: "Infinity", 8743: "[and]", 8744: "[or]", 
+    9208: "[Pause Button]", 9634: "[White Square with Rounded Corners]", 9651: "[Triangle]", 9711: "[Large circle]", 
+    9730: "[Umbrella]", 9733: "[Black Star]", 9749: "[Coffee]", 9752: "[Shamrock Emoji]", 
+    9760: "[Skull and Crossbones]", 9774: "[Peace Symbol]", 9775: "[Yin Yang]", 9785: "[Frowning Face]", 
+    9792: "[Female Sign]", 9794: "[Male Sign]", 9812: "[White Chess King]", 9813: "[White Chess Queen]", 
+    9818: "[Black Chess King]", 9819: "[Black Chess Queen]", 9820: "[Black Chess Rook]", 9822: "[Black Chess Knight]", 
+    9824: "[Spade Suit]", 9827: "[Club Suit]", 9829: "[Heart Suit]", 9830: "[Diamond Suit]", 
+    9835: "[Beamed Eighth Notes]", 9837: "[Flat symbol]", 9838: "[Natural Symbol]", 9839: "[Sharp Symbol]", 
+    9895: "[Transgender Symbol]", 9904: "[Coffin]", 9918: "[Baseball]", 9996: "[Victory Hand]", 10084: "[Red Heart]", 
+    65039: "", 127466: "E", 127470: "I", 127747: "[Night with Stars]", 127755: "[Volcano]", 127866: "[Beer Mug]", 
+    127873: "[Wrapped Gift]", 127877: "[Santa Claus]", 127904: "[Carousel Horse]", 127912: "[Artist Palette]", 
+    127914: "[Circus Tent]", 127929: "[Musical Keyboard]", 127970: "[Office Building]", 127984: "[Castle]", 
+    127987: "[White flag]", 127995: "", 127997: "", 128001: "[Mouse]", 128010: "[Crocodile]", 128016: "[Goat]", 
+    128024: "[Elephant]", 128029: "[Honeybee]", 128059: "[Bear]", 128065: "[Eye]", 128092: "[Handbag]", 
+    128102: "[Boy]", 128104: "[Man]", 128113: "[Person: Blond Hair]", 128125: "[Alien]", 128128: "[Skull]", 
+    128141: "[Ring]", 128163: "[Bomb]", 128176: "[Money Bag]", 128240: "[Newspaper]", 128241: "[Mobile Phone]", 
+    128302: "[Crystal Ball]", 128509: "[Statue of Liberty]", 128514: "[Face with Tears of Joy]", 
+    128536: "[Face Blowing]", 128544: "[Angry Face]", 128546: "[Crying Face]", 128560: "[Anxious Face with Sweat]", 
+    128591: "[Folded Hands]", 128640: "[Rocket]", 128652: "[Bus]", 128663: "[Automobile]", 128674: "[Ship]", 
+    128679: "[Construction]", 128684: "[Cigarette]", 128759: "[Sled]", 129299: "[Nerd Face]", 
+    129304: "[Sign of the Horns]", 129335: "[Man Shrugging]", 129354: "[Boxing Glove]", 129415: "[Bat]", 
+    129417: "[Owl]", 129419: "[Butterfly]", 129421: "[Gorilla]", 129461: "[Leg]", 129498: "[Woman Fairy]", 
+    129501: "[Elf Emoji]", 
 }
+
+# Replace some emoticons and other oddball phrases that might lose meaning 
+# if they're individual characters are fixed
+EMOTICON_SUBS = {
+    '\u204e*\u2021:-)}}}}': '**|:-)}}}}',
+    '==}:\u2021]]': '==}:|]]',
+    '(\xb6-)': '(P-)',
+    '*\u2021(:o)}': '*|(:o)}',
+    '\xaf\\_(\u30c4)_/\xaf': '[Shrug Emoticon]',
+    '\u0e1b\u0e23\u0e30\u0e40\u0e17\u0e28\u0e44\u0e17\u0e22': '[Thailand]',
+    '\u0eaa\u0eb0\u0e9a\u0eb2\u0e8d\u0e94\u0eb5': '[Hello in Lao]',
+}
+
 # Some rules to remove HTML like things with text versions for the .puz files
 HTML_TO_TEXT_RULES = [
     ("<i>(.*?)</i>", "_\\1_"),              # "<i>Italic</i>" -> "_Italic_"
@@ -338,16 +333,20 @@ def print_puzzle(p):
         print(" " + row + extra)
 
 
+store_latin1ify_errors = None
+extra_latin1ify_message = None
 def latin1ify(s):
     source_string = s
 
     # Make a Unicode string compliant with the Latin-1 (ISO-8859-1) character
     # set; the Across Lite v1.3 format only supports Latin-1 encoding
 
+    # Replace the emoticons first with an ASCII version:
+    for k, v in EMOTICON_SUBS.items():
+        s = s.replace(k, v)
+
     # Use table to convert the most common Unicode glyphs
-    for search, replace in LATIN1_SUBS.items():
-        if replace is not None:
-            s = s.replace(search, replace)
+    s = s.translate(LATIN1_SUBS)
 
     # Convert anything remaining using replacements like '\N{WINKING FACE}'
     s = s.encode('ISO-8859-1', 'namereplace').decode('ISO-8859-1')
@@ -361,7 +360,13 @@ def latin1ify(s):
     # Warn on anything left over
     for x in s:
         if not ' ' <= x <= '~':
-            print(f"Warning: {json.dumps(x)} will likely cause problems in {s} from {source_string}")
+            if extra_latin1ify_message is not None:
+                print(extra_latin1ify_message)
+            print(f"Warning: '{x.encode('unicode_escape').decode("utf-8")}', or '{x}' will likely cause problems")
+            print(f" Source: '{source_string}'")
+            print(f"Escaped: '{source_string.encode('unicode_escape').decode("utf-8")}'")
+            if store_latin1ify_errors is not None:
+                store_latin1ify_errors[ord(x)] = x
 
     return s
 
