@@ -1,20 +1,7 @@
 #!/usr/bin/env python3
 
-from email.quoprimime import unquote
-import browser_cookie3
-import requests
-import requests.utils
-import os
-import decompress
-import re
-import json
-import puz
-import sys
-import html
-import datetime
-import time
-import base64
-import version
+import base64, browser_cookie3, datetime, decompress, html, json
+import os, puz, re, requests, requests.utils, sys, time, version
 if sys.version_info >= (3, 11): from datetime import UTC
 else: import datetime as datetime_fix; UTC=datetime_fix.timezone.utc
 
@@ -38,14 +25,17 @@ NYT_TYPE_INVISIBLE = 4 # An "invisible" cell, generally something outside the ma
 
 LATIN1_SUBS = {
     # For converting clues etc. into Latin-1 (ISO-8859-1) format
-    10: " ", 13: " ", 142: "", 160: " ", 161: "!", 162: "cents", 163: "Pounds", 165: "Yen", 167: "[Section sign]", 
-    169: "[Copyright symbol]", 172: "[not]", 173: "-", 174: "[Registered trademark symbol]", 176: "degrees", 
-    177: "plus-minus", 180: "'", 183: "*", 186: "degrees", 189: "1/2", 191: "?", 192: "A", 193: "A", 194: "A", 
-    196: "A", 198: "AE", 199: "C", 200: "E", 201: "E", 202: "E", 203: "E", 205: "I", 206: "I", 209: "N", 211: "O", 
-    214: "O", 216: "O", 220: "U", 224: "a", 225: "a", 226: "a", 227: "a", 228: "a", 229: "a", 231: "c", 232: "e", 
-    233: "e", 234: "e", 235: "e", 236: "i", 237: "i", 238: "i", 239: "i", 241: "n", 242: "o", 243: "o", 244: "o", 
-    246: "o", 247: "/", 248: "o", 249: "u", 250: "u", 251: "u", 252: "u", 268: "C", 269: "c", 333: "o", 699: "'", 
-    710: "", 931: "[Greek letter sigma]", 945: "[Greek letter alpha]", 946: "[Greek letter beta]", 951: "n", 
+    9: " ", 10: " ", 13: " ", 127: "", 133: "", 135: "", 140: "", 142: "", 144: "", 145: "", 146: "", 147: "", 
+    148: "", 150: "", 151: "", 154: "", 160: " ", 161: "!", 162: "cents", 163: "Pounds", 165: "Yen", 
+    167: "[Section sign]", 169: "[Copyright symbol]", 172: "[not]", 173: "-", 174: "[Registered trademark symbol]", 
+    176: "degrees", 177: "plus-minus", 178: "2", 180: "'", 182: "[Pilcrow]", 183: "*", 185: "1", 186: "degrees", 
+    188: "1/4", 189: "1/2", 190: "3/4", 191: "?", 192: "A", 193: "A", 194: "A", 195: "A", 196: "A", 197: "A", 
+    198: "AE", 199: "C", 200: "E", 201: "E", 202: "E", 203: "E", 204: "I", 205: "I", 206: "I", 208: "D", 209: "N", 
+    210: "O", 211: "O", 212: "O", 213: "O", 214: "O", 215: "*", 216: "O", 218: "U", 220: "U", 223: "B", 224: "a", 
+    225: "a", 226: "a", 227: "a", 228: "a", 229: "a", 230: "ae", 231: "c", 232: "e", 233: "e", 234: "e", 235: "e", 
+    236: "i", 237: "i", 238: "i", 239: "i", 240: "o", 241: "n", 242: "o", 243: "o", 244: "o", 245: "o", 246: "o", 
+    247: "/", 248: "o", 249: "u", 250: "u", 251: "u", 252: "u", 268: "C", 269: "c", 333: "o", 699: "'", 710: "", 
+    931: "[Greek letter sigma]", 945: "[Greek letter alpha]", 946: "[Greek letter beta]", 951: "n", 
     952: "[Greek letter theta]", 960: "Pi", 961: "[Greek letter rho]", 968: "[Greek letter psi]", 8205: "", 8211: "-", 
     8212: "-", 8216: "'", 8217: "'", 8220: "\"", 8221: "\"", 8224: "[Dagger mark]", 8226: "*", 8230: "...", 8323: "3", 
     8364: "Euro", 8383: "[Bitcoin]", 8592: "[Left arrow]", 8593: "[Up arrow]", 8594: "[Right arrow]", 
@@ -97,6 +87,8 @@ HTML_TO_TEXT_RULES = [
     ("<s>(.*?)</s>", "[*cross out* \\1]"),  # "<s>Crossed Out</s>" -> "[*cross out* Crossed out]"
     ("<[^>]+>", ""),                        # Remove other things that look like HTML, but leave bare "<" alone.
     ("&nbsp;", " "),                        # Replace HTML's non-breaking spaces into normal spaces
+    ("&quot;", '"'),                        # Replace HTML's quote
+    ("&amp;", '&'),                         # Replace HTML's ampersand
 ]
 
 
