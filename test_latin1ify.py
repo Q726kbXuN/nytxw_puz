@@ -13,13 +13,23 @@ def cmd(cmd, args, desc):
         return wrapper
     return helper
 
+def python_escape(val):
+    val = val.encode("unicode-escape").decode("utf-8")
+    if "'" not in val:
+        return f"'{val}'"
+    elif '"' not in val:
+        return f'"{val}"'
+    else:
+        val = val.replace("'", "\\'")
+        return f"'{val}'"
+
 @cmd("sort", 0, "= Pretty print and sort the LATIN1_SUBS variable")
 def show_sorted():
     if len(sys.argv) == 2 and sys.argv[1] == "sort":
         header = " " * 4
         row = header
         for key in sorted(nyt.LATIN1_SUBS):
-            temp = f"{key}: {json.dumps(nyt.LATIN1_SUBS[key])}, "
+            temp = f"{key}: {python_escape(nyt.LATIN1_SUBS[key])}, "
             if len(temp) + len(row) >= 120:
                 print(row)
                 row = header
@@ -96,11 +106,11 @@ def use_loader(loader_py):
             nyt.extra_latin1ify_message = f"  On file {pretty}..."
             for clue in data["clues"]:
                 nyt.latin1ify(clue['clue'])
-            if len(nyt.store_latin1ify_errors) > 10:
+            if len(nyt.store_latin1ify_errors) > 0:
                 break
 
     for key, value in nyt.store_latin1ify_errors.items():
-        print(f'    {key}: "{value}", # {chr(key).encode("unicode-escape").decode("utf-8")}')
+        print(f'    {key}: "{value}", # {python_escape(value)}')
 
     print(f"Checked {checked:,} files")
 
