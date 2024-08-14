@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # A test harness around testing latin1ify's implementation
-import nyt
+import nyt, puz
 import json, os, sys, zipfile
 
 _commands = []
@@ -76,7 +76,6 @@ def test_archive(root_dir):
 
             if resp is not None:
                 checked += 1
-                # print(json.dumps(cur))
                 nyt.extra_latin1ify_message = f"  On file {fn}..."
                 data = nyt.data_to_puz(resp)
                 if len(nyt.store_latin1ify_errors) > 10:
@@ -89,8 +88,17 @@ def test_archive(root_dir):
 
 @cmd("use_loader", 1, "<loader_py> = Use a loader module to test puzzles")
 def use_loader(loader_py):
+    # Some of the loader helpers deal with semi-broken puz files
+    puz.IGNORE_CHECKSUMS = True
+    puz.ENCODING_UTF8 = puz.ENCODING
+
     import importlib
-    module = importlib.util.module_from_spec(importlib.util.spec_from_loader('loader', loader=None))
+    import re
+
+    module = importlib.util.module_from_spec(importlib.util.spec_from_loader('load_puzzle', loader=None))
+    if os.path.isdir(loader_py) and os.path.isfile(os.path.join(loader_py, "load_puzzle.py")):
+        loader_py = os.path.join(loader_py, "load_puzzle.py")
+
     with open(loader_py, "rb") as f:
         code = f.read()
     module.__file__ = loader_py
@@ -99,13 +107,16 @@ def use_loader(loader_py):
     nyt.store_latin1ify_errors = {}
     checked = 0
 
+    r = re.compile("&[#a-z0-9]+;")
     for pretty, fn in module.get_puzzles():
         if not module.is_unusual(pretty):
             data = module.load_puzzle(fn)
             checked += 1
             nyt.extra_latin1ify_message = f"  On file {pretty}..."
             for clue in data["clues"]:
-                nyt.latin1ify(clue['clue'])
+                temp = nyt.latin1ify(clue['clue'])
+                if r.search(temp):
+                    print("WARNING: HTML entity detected: " + temp)
             if len(nyt.store_latin1ify_errors) > 0:
                 break
 

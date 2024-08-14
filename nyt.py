@@ -25,8 +25,8 @@ NYT_TYPE_INVISIBLE = 4 # An "invisible" cell, generally something outside the ma
 
 LATIN1_SUBS = {
     # For converting clues etc. into Latin-1 (ISO-8859-1) format
-    9: ' ', 10: ' ', 13: ' ', 127: '', 133: '', 135: '', 140: '', 142: '', 144: '', 145: '', 146: '', 147: '', 
-    148: '', 150: '', 151: '', 154: '', 160: ' ', 161: '!', 162: 'cents', 163: 'Pounds', 165: 'Yen', 
+    9: ' ', 10: ' ', 13: ' ', 127: '', 128: '', 133: '', 135: '', 137: '', 140: '', 142: '', 144: '', 145: '', 
+    146: '', 147: '', 148: '', 150: '', 151: '', 154: '', 160: ' ', 161: '!', 162: 'cents', 163: 'Pounds', 165: 'Yen', 
     167: '[Section sign]', 169: '[Copyright symbol]', 172: '[not]', 173: '-', 174: '[Registered trademark symbol]', 
     176: 'degrees', 177: 'plus-minus', 178: '2', 180: "'", 182: '[Pilcrow]', 183: '*', 185: '1', 186: 'degrees', 
     188: '1/4', 189: '1/2', 190: '3/4', 191: '?', 192: 'A', 193: 'A', 194: 'A', 195: 'A', 196: 'A', 197: 'A', 
@@ -41,18 +41,18 @@ LATIN1_SUBS = {
     8364: 'Euro', 8383: '[Bitcoin]', 8592: '[Left arrow]', 8593: '[Up arrow]', 8594: '[Right arrow]', 
     8595: '[Down arrow]', 8730: '[Square root]', 8734: 'Infinity', 8743: '[and]', 8744: '[or]', 
     9208: '[Pause Button]', 9634: '[White Square with Rounded Corners]', 9651: '[Triangle]', 9711: '[Large circle]', 
-    9730: '[Umbrella]', 9733: '[Black Star]', 9749: '[Coffee]', 9752: '[Shamrock Emoji]', 
-    9760: '[Skull and Crossbones]', 9774: '[Peace Symbol]', 9775: '[Yin Yang]', 9785: '[Frowning Face]', 
-    9792: '[Female Sign]', 9794: '[Male Sign]', 9812: '[White Chess King]', 9813: '[White Chess Queen]', 
-    9818: '[Black Chess King]', 9819: '[Black Chess Queen]', 9820: '[Black Chess Rook]', 9822: '[Black Chess Knight]', 
-    9824: '[Spade Suit]', 9827: '[Club Suit]', 9829: '[Heart Suit]', 9830: '[Diamond Suit]', 
-    9835: '[Beamed Eighth Notes]', 9837: '[Flat symbol]', 9838: '[Natural Symbol]', 9839: '[Sharp Symbol]', 
-    9895: '[Transgender Symbol]', 9904: '[Coffin]', 9918: '[Baseball]', 9996: '[Victory Hand]', 10084: '[Red Heart]', 
-    127466: 'E', 127470: 'I', 127747: '[Night with Stars]', 127755: '[Volcano]', 127866: '[Beer Mug]', 
-    127873: '[Wrapped Gift]', 127877: '[Santa Claus]', 127904: '[Carousel Horse]', 127912: '[Artist Palette]', 
-    127914: '[Circus Tent]', 127929: '[Musical Keyboard]', 127970: '[Office Building]', 127984: '[Castle]', 
-    127987: '[White flag]', 128001: '[Mouse]', 128010: '[Crocodile]', 128016: '[Goat]', 128024: '[Elephant]', 
-    128029: '[Honeybee]', 128059: '[Bear]', 128065: '[Eye]', 128092: '[Handbag]', 128102: '[Boy]', 128104: '[Man]', 
+    9730: '[Umbrella]', 9733: '[Black Star]', 9749: '[Coffee]', 9752: '[Shamrock]', 9760: '[Skull and Crossbones]', 
+    9774: '[Peace Symbol]', 9775: '[Yin Yang]', 9785: '[Frowning Face]', 9792: '[Female Sign]', 9794: '[Male Sign]', 
+    9812: '[White Chess King]', 9813: '[White Chess Queen]', 9818: '[Black Chess King]', 9819: '[Black Chess Queen]', 
+    9820: '[Black Chess Rook]', 9822: '[Black Chess Knight]', 9824: '[Spade Suit]', 9827: '[Club Suit]', 
+    9829: '[Heart Suit]', 9830: '[Diamond Suit]', 9835: '[Beamed Eighth Notes]', 9837: '[Flat symbol]', 
+    9838: '[Natural Symbol]', 9839: '[Sharp Symbol]', 9895: '[Transgender Symbol]', 9904: '[Coffin]', 
+    9918: '[Baseball]', 9996: '[Victory Hand]', 10084: '[Red Heart]', 127466: 'E', 127470: 'I', 
+    127747: '[Night with Stars]', 127755: '[Volcano]', 127866: '[Beer Mug]', 127873: '[Wrapped Gift]', 
+    127877: '[Santa Claus]', 127904: '[Carousel Horse]', 127912: '[Artist Palette]', 127914: '[Circus Tent]', 
+    127929: '[Musical Keyboard]', 127970: '[Office Building]', 127984: '[Castle]', 127987: '[White flag]', 
+    128001: '[Mouse]', 128010: '[Crocodile]', 128016: '[Goat]', 128024: '[Elephant]', 128029: '[Honeybee]', 
+    128059: '[Bear]', 128065: '[Eye]', 128092: '[Handbag]', 128102: '[Boy]', 128104: '[Man]', 
     128113: '[Person: Blond Hair]', 128125: '[Alien]', 128128: '[Skull]', 128141: '[Ring]', 128163: '[Bomb]', 
     128176: '[Money Bag]', 128240: '[Newspaper]', 128241: '[Mobile Phone]', 128302: '[Crystal Ball]', 
     128509: '[Statue of Liberty]', 128514: '[Face with Tears of Joy]', 128536: '[Face Blowing]', 
@@ -60,11 +60,11 @@ LATIN1_SUBS = {
     128640: '[Rocket]', 128652: '[Bus]', 128663: '[Automobile]', 128674: '[Ship]', 128679: '[Construction]', 
     128684: '[Cigarette]', 128759: '[Sled]', 129299: '[Nerd Face]', 129304: '[Sign of the Horns]', 
     129335: '[Man Shrugging]', 129354: '[Boxing Glove]', 129415: '[Bat]', 129417: '[Owl]', 129419: '[Butterfly]', 
-    129421: '[Gorilla]', 129461: '[Leg]', 129498: '[Woman Fairy]', 129501: '[Elf Emoji]', 
+    129421: '[Gorilla]', 129461: '[Leg]', 129498: '[Woman Fairy]', 129501: '[Elf]', 
 }
 
 # Replace some emoticons and other oddball phrases that might lose meaning 
-# if they're individual characters are fixed
+# if the individual characters are fixed
 EMOTICON_SUBS = {
     '\u204e*\u2021:-)}}}}': '**|:-)}}}}',
     '==}:\u2021]]': '==}:|]]',
@@ -86,8 +86,20 @@ HTML_TO_TEXT_RULES = [
     ("<s>(.*?)</s>", "[*cross out* \\1]"),  # "<s>Crossed Out</s>" -> "[*cross out* Crossed out]"
     ("<[^>]+>", ""),                        # Remove other things that look like HTML, but leave bare "<" alone.
     ("&nbsp;", " "),                        # Replace HTML's non-breaking spaces into normal spaces
-    ("&quot;", '"'),                        # Replace HTML's quote
-    ("&amp;", '&'),                         # Replace HTML's ampersand
+    ("&quot;", '"'),                        # Replace some other entities
+    ("&mdash;", "-"),
+    ("&amp;", '&'),
+    ("&vert;", "|"),
+    ("&diams;", "\u2666"),
+    ("&hearts;", "\u2665"),
+    ("&spades;", "\u2660"),
+    ("&clubs;", "\u2663"),
+    ("&lt;", "<"),
+    ("&gt;", ">"),
+    ("&bull;", "*"),
+                                            # Replace all numbered entities with the character
+    ("&#([0-9]+);", lambda m: chr(int(m.group(1)))),
+    ("&#x([0-9a-fA-F]+);", lambda m: chr(int(m.group(1), 16))),
 ]
 
 
@@ -336,15 +348,15 @@ def latin1ify(s):
     for k, v in EMOTICON_SUBS.items():
         s = s.replace(k, v)
 
+    # Replace HTML like things into plain text
+    for pattern, repl in HTML_TO_TEXT_RULES:
+        s = re.sub(pattern, repl, s)
+
     # Use table to convert the most common Unicode glyphs
     s = s.translate(LATIN1_SUBS)
 
     # Convert anything remaining using replacements like '\N{WINKING FACE}'
     s = s.encode('ISO-8859-1', 'namereplace').decode('ISO-8859-1')
-
-    # Replace HTML like things into plain text
-    for pattern, repl in HTML_TO_TEXT_RULES:
-        s = re.sub(pattern, repl, s)
 
     s = s.strip()
 

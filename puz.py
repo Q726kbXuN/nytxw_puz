@@ -21,6 +21,8 @@ __license__ = 'MIT'
 __copyright__ = 'Copyright 2009 Alex DeJarnatt'
 
 
+IGNORE_CHECKSUMS = False
+
 HEADER_FORMAT = '''<
              H 11s        xH
              Q       4s  2sH
@@ -214,12 +216,13 @@ class Puzzle:
         if s.can_read():
             self.postscript = s.read_to_end()
 
-        if cksum_gbl != self.global_cksum():
-            raise PuzzleFormatError('global checksum does not match')
-        if cksum_hdr != self.header_cksum():
-            raise PuzzleFormatError('header checksum does not match')
-        if cksum_magic != self.magic_cksum():
-            raise PuzzleFormatError('magic checksum does not match')
+        if not IGNORE_CHECKSUMS:
+            if cksum_gbl != self.global_cksum():
+                raise PuzzleFormatError('global checksum does not match')
+            if cksum_hdr != self.header_cksum():
+                raise PuzzleFormatError('header checksum does not match')
+            if cksum_magic != self.magic_cksum():
+                raise PuzzleFormatError('magic checksum does not match')
         for code, cksum_ext in ext_cksum.items():
             if cksum_ext != data_cksum(self.extensions[code]):
                 raise PuzzleFormatError(
