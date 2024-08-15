@@ -25,16 +25,15 @@ def python_escape(val):
 
 @cmd("sort", 0, "= Pretty print and sort the LATIN1_SUBS variable")
 def show_sorted():
-    if len(sys.argv) == 2 and sys.argv[1] == "sort":
-        header = " " * 4
-        row = header
-        for key in sorted(nyt.LATIN1_SUBS):
-            temp = f"{key}: {python_escape(nyt.LATIN1_SUBS[key])}, "
-            if len(temp) + len(row) >= 120:
-                print(row)
-                row = header
-            row += temp
-        print(row)
+    header = " " * 4
+    row = header
+    for key in sorted(nyt.LATIN1_SUBS):
+        temp = f"{key}: {python_escape(nyt.LATIN1_SUBS[key])}, "
+        if len(temp) + len(row) >= 120:
+            print(row)
+            row = header
+        row += temp
+    print(row)
 
 def enum_files(root_dir):
     for dirpath, dirnames, filenames in os.walk(root_dir):
