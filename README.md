@@ -2,9 +2,9 @@
 
 ![Logo](other/logo.png)
 
-A windows program to convert NY Times crosswords from the web to Across Lite compatible files.
+A program for Windows and MacOS and power users on other platforms to convert NY Times crosswords from the web to Across Lite compatible files.
 
-To run this, first download and decompress the [release](https://github.com/Q726kbXuN/nytxw_puz/releases/latest/download/nytxw_puz.zip).  Then, run the executable, and answer the three questions:
+To run this, first download and decompress the latest version for [Windows PCs](https://github.com/Q726kbXuN/nytxw_puz/releases/latest/download/nytxw_puz.zip), newer [Apple Silicon Macs](https://github.com/Q726kbXuN/nytxw_puz/releases/latest/download/nytxw_puz_mac.zip), or older [Intel Macs](https://github.com/Q726kbXuN/nytxw_puz/releases/latest/download/nytxw_puz_mac_x64.zip).  Then, run the executable, and answer the three questions:
 
 
 ```
@@ -24,7 +24,7 @@ Note: Running this script requires you're logged into nytimes.com in your browse
 
 Alternatively, you can pass in the browser, URL, and filename from the command line.
 
-To run the Python script directly, clone this repo, then setup the venv to download packages:
+To run the Python script directly on pretty much any platform that can run Python, clone this repo, then setup the venv to download packages:
 ```
 python -m venv .venv
 .venv\Scripts\activate.bat
@@ -56,7 +56,7 @@ Try following [these directions](howto.md), or [these directions](howto_mac.md) 
 
 * I downloaded this a while ago and it stopped working!
 
-Please update to at least version 1.07.  There was a change with how the puzzles are published that broke older versions of this program.
+Please update to at least version 1.14.  There was a change with how the puzzles are published that broke older versions of this program.
 
 * I just want the .puz files!
 
