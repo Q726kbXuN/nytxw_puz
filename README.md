@@ -58,6 +58,10 @@ Try following [these directions](howto.md), or [these directions](howto_mac.md) 
 
 Please update to at least version 1.14.  There was a change with how the puzzles are published that broke older versions of this program.
 
+* I get an error trying to load cookies from Chrome on Windows!
+
+There has been a Chrome update that makes it difficult to load cookies.  Until this [underlying issue](https://github.com/borisbabic/browser_cookie3/issues/210) is fixed, you will need to log into NY Times on Firefox and use that browser for the session information.
+
 * I just want the .puz files!
 
 You can download some puz files from [this archive](https://q726kbxun.github.io/xwords/xwords.html).
