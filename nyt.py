@@ -562,7 +562,7 @@ def main():
         output = data_to_puz(puzzle)
         output.save(os.path.expanduser(output_fn))
         print(f"Created {output_fn}")
-        if sys.platform == 'darwin':
+        if sys.platform == 'darwin' and hasattr(sys, 'ps1'):
             input("Press enter to continue...")
     except:
         print("ERROR! " * 10)
@@ -573,7 +573,8 @@ def main():
         print("")
         print("Please report issues to https://www.reddit.com/user/nobody514/")
         print("")
-        input("Press enter to continue...")
+        if hasattr(sys, 'ps1'):
+            input("Press enter to continue...")
 
 
 if __name__ == "__main__":
