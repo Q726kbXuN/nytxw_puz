@@ -60,7 +60,7 @@ LATIN1_SUBS = {
     9774: '[Peace Symbol]', 9775: '[Yin Yang]', 9785: '[Frowning Face]', 9786: '[Smiling Face]', 
     9792: '[Female Sign]', 9794: '[Male Sign]', 9800: '[Aries]', 9804: '[Leo]', 9824: '[Spade]', 9827: '[Club]', 
     9829: '[Heart]', 9830: '[Diamond]', 9835: '[Beamed Eighth Notes]', 9837: '[Flat]', 9839: '[Sharp]', 
-    9851: '[Recycling Symbol]', 9872: '[Flag]', 9879: 'Alembic', 9883: '[Atom]', 9888: '[Warning]', 
+    9851: '[Recycling Symbol]', 9872: '[Flag]', 9879: 'Alembic', 9881: '[Gear]', 9883: '[Atom]', 9888: '[Warning]', 
     9895: '[Transgender Symbol]', 9904: '[Coffin]', 9918: '[Baseball]', 9961: '[Shinto Shrine]', 9973: '[Sailboat]', 
     9975: '[Skier]', 9986: '[Scissors]', 9992: '[Airplane]', 9993: '[Envelope]', 9994: '[Raised Fist]', 
     9996: '[V sign]', 10014: '[Cross]', 10052: '[Snowflake]', 10084: '[Red Heart]', 10145: '[Right Arrow]', 
