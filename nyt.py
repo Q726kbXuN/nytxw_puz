@@ -23,8 +23,8 @@ NYT_TYPE_CIRCLED = 2   # Cell with a circle around it as for letters part of a t
 NYT_TYPE_GRAY = 3      # A cell filled in as gray
 NYT_TYPE_INVISIBLE = 4 # An "invisible" cell, generally something outside the main grid
 
+# For converting clues etc. into Latin-1 (ISO-8859-1) format
 LATIN1_SUBS = {
-    # For converting clues etc. into Latin-1 (ISO-8859-1) format
     9: ' ', 10: ' ', 13: ' ', 133: '', 134: ' ', 135: ' ', 140: ' ', 142: ' ', 144: ' ', 145: ' ', 146: ' ', 147: ' ', 
     148: ' ', 150: ' ', 151: ' ', 154: ' ', 160: ' ', 161: '!', 162: 'cents', 163: 'Pounds', 165: 'Yen', 
     167: '[Section sign]', 169: '[Copyright symbol]', 172: '', 173: '', 174: '[Registered trademark]', 175: '', 
@@ -63,12 +63,13 @@ LATIN1_SUBS = {
     9851: '[Recycling Symbol]', 9872: '[Flag]', 9879: 'Alembic', 9881: '[Gear]', 9883: '[Atom]', 9888: '[Warning]', 
     9895: '[Transgender Symbol]', 9904: '[Coffin]', 9918: '[Baseball]', 9961: '[Shinto Shrine]', 9973: '[Sailboat]', 
     9975: '[Skier]', 9986: '[Scissors]', 9992: '[Airplane]', 9993: '[Envelope]', 9994: '[Raised Fist]', 
-    9996: '[V sign]', 10014: '[Cross]', 10052: '[Snowflake]', 10084: '[Red Heart]', 10145: '[Right Arrow]', 
-    11014: '[Up arrow]', 11088: '[Star]', 12356: '', 12399: '', 12484: '', 19177: '', 30820: '', 30825: '', 34864: '', 
-    35685: '', 36005: '', 36064: '', 36077: '', 38913: '', 38924: '', 38945: '', 38948: '', 38950: '', 38959: '', 
-    38963: '', 38964: '', 39081: '', 39200: '', 39205: '', 39264: '', 39268: '', 39411: '', 39791: '', 40101: '', 
-    40105: '', 40161: '', 40162: '', 40181: '', 40229: '', 55308: '[Sparrow]', 55356: '', 55357: '[Astonished Face]', 
-    55358: '[Robot]', 55622: '', 55623: '', 55639: '', 56186: '', 65038: '', 65039: '', 65533: '', 
+    9996: '[V sign]', 10014: '[Cross]', 10052: '[Snowflake]', 10067: '[Question Mark]', 10084: '[Red Heart]', 
+    10145: '[Right Arrow]', 11014: '[Up arrow]', 11088: '[Star]', 12356: '', 12399: '', 12484: '', 19177: '', 
+    30820: '', 30825: '', 34864: '', 35685: '', 36005: '', 36064: '', 36077: '', 38913: '', 38924: '', 38945: '', 
+    38948: '', 38950: '', 38959: '', 38963: '', 38964: '', 39081: '', 39200: '', 39205: '', 39264: '', 39268: '', 
+    39411: '', 39791: '', 40101: '', 40105: '', 40161: '', 40162: '', 40181: '', 40229: '', 55308: '[Sparrow]', 
+    55356: '', 55357: '[Astonished Face]', 55358: '[Robot]', 55622: '', 55623: '', 55639: '', 56186: '', 65038: '', 
+    65039: '', 65533: '', 
 }
 
 # Replace some emoticons and other oddball phrases that might lose meaning 
