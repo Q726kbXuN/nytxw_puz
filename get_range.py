@@ -41,7 +41,7 @@ def main():
         print(f"{dest_folder} does not exist!")
 
     # The endpoint that the NYTimes website uses for it's calendar
-    api = "https://nyt-games-prd.appspot.com/svc/crosswords/v3/51312474/puzzles.json?publish_type=daily&sort_order=asc&sort_by=print_date&date_start=START&date_end=END"
+    api = "https://www.nytimes.com/svc/crosswords/v3/puzzles.json?publish_type=daily&sort_order=asc&sort_by=print_date&date_start=START&date_end=END"
     api = api.replace("START", start).replace("END", end)
 
     # Call into the helper here to load the endpoint
