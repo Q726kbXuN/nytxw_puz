@@ -220,7 +220,8 @@ def get_puzzle_from_id(cookies, puzzle_id):
     # that looks like it used to
     resp = new_format["body"][0]
     resp["meta"] = {}
-    # TODO: Notes might be stored elsewhere, need to verify
+    # These fields all live at the top level of the v6 API response.  The body's
+    # "explanation" text is a post-solve reveal, so it's not treated as a note.
     for cur in ["publicationDate", "title", "editor", "copyright", "constructors", "notes"]:
         if cur in new_format:
             resp["meta"][cur] = new_format[cur]
@@ -446,7 +447,7 @@ def data_to_puz(puzzle):
     if 'editor' in data['meta']:
         p.author += ' / ' + latin1ify(data['meta']['editor'])
     if 'copyright' in data['meta']:
-        p.copyright = '© ' + data['meta']['copyright'] + ', The New York Times'
+        p.copyright = '\xa9 ' + data['meta']['copyright'] + ', The New York Times'
 
     # Pull out the size of the puzzle
     p.height = data["dimensions"]["rowCount"]
@@ -481,19 +482,20 @@ def data_to_puz(puzzle):
         for cell in data['cells']:
             rebus.add_rebus(gridrebus(cell))
 
-    # See if any grid squares are marked up with circles
-    if any(x['type'] in (NYT_TYPE_CIRCLED, NYT_TYPE_GRAY) for x in data['cells'] if 'type' in x):
+    # See if any grid squares are marked up with circles.  Gray cells have no
+    # .puz equivalent, so they're not marked as circles
+    if any(x['type'] == NYT_TYPE_CIRCLED for x in data['cells'] if 'type' in x):
         markup = p.markup()
         markup.markup = [0] * (p.width * p.height)
 
         for i, cell in enumerate(data['cells']):
-            if 'type' in cell and cell['type'] in (NYT_TYPE_CIRCLED, NYT_TYPE_GRAY):
+            if 'type' in cell and cell['type'] == NYT_TYPE_CIRCLED:
                 markup.markup[cell.get('index', i)] = puz.GridMarkup.Circled
 
     # Check for any notes in puzzle (e.g., Sep 11, 2008)
     if data['meta'].get('notes', None) is not None:
         p.notes = '\n\n'.join(latin1ify(x['text']) for x in data['meta']['notes']
-                              if 'text' in x)
+                              if len(x.get('text', '')) > 0)
 
     # All done
     return p
